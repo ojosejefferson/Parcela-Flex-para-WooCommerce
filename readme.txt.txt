@@ -1,10 +1,18 @@
-# Parcelas-Flex-For-WooCommerce
- 
-# Meu Plugin de Pagamentos
+=== Parcelas Flex for WooCommerce ===
+Contribuidores: José Jefferson
+Tags: Dividi, mostrar parcelas, parcelamento, pagamento à vista, WooCommerce, Pix, boleto bancário, cartão de crédito, descontos, produtos variáveis, e-commerce, Brasil
+Testado até o WordPress: 5.9
+Versão do PHP necessária: 7.0
+Licença: GPL v2 ou posterior
+Licença URI: https://www.gnu.org/licenses/gpl-2.0.html
+
+Um plugin para adicionar opções de parcelamento no WooCommerce com descontos para Pix e Boleto. Compatível com produtos variáveis, ele proporciona flexibilidade de pagamento e otimiza a conversão de vendas.
+
+== Descrição ==
 
 O plugin é uma solução robusta para o WooCommerce, adicionando opções de parcelamento com descontos exclusivos para Pix e Boleto. Funciona para produtos variavel Desenvolvido 100% no Brasil, nosso plugin visa otimizar a conversão de vendas, oferecendo flexibilidade e vantagens aos seus clientes.
 
-## Recursos Principais
+= Funcionalidades =
 
 1. **Pagamento via Pix:** Ofereça a conveniência e velocidade do Pix aos seus clientes. Nosso plugin exibe descontos dinâmicos para transações Pix.
 
@@ -14,23 +22,9 @@ O plugin é uma solução robusta para o WooCommerce, adicionando opções de pa
 
 4. **Economize Pagamento à Vista:** Destaque quanto o cliente economiza ao optar pelo pagamento à vista. O valor economizado é exibido de forma clara e impactante.
 
-## Destaques
+= Instruções de Uso =
 
-- **Compatibilidade com Produtos Variáveis:** Nosso plugin é completamente compatível com produtos variáveis, adaptando-se automaticamente às características específicas de cada produto.
-
-- **Flexibilidade de Pagamento:** Personalize as configurações de pagamento no painel administrativo de forma simples e eficiente.
-
-- **Otimização da Conversão:** Proporcione uma experiência de compra aprimorada, incentivando a conclusão das transações.
-
-## Como Usar
-
-1. Instale e ative o plugin.
-2. Personalize as configurações de pagamento no painel administrativo.
-3. Os métodos de pagamento serão exibidos dinamicamente na página do produto, destacando descontos e opções de parcelamento.
-
-
-
-## Shortcodes e Instruções de Uso
+Use os Shortcodes para mostrar na pagina de produto e loop
 
 ### Mostrar Desconto no Pix - `[desconto_pix]`
 
@@ -72,13 +66,40 @@ Adicione este shortcode para mostrar a economia ao pagar à vista em páginas de
 
 Exiba a melhor parcela disponível em páginas de loops utilizando este shortcode.
 
+== Instalação ==
 
-## Descrição Técnica
+1. Instale e ative o plugin.
+2. Personalize as configurações de pagamento no painel administrativo.
+3. Os métodos de pagamento serão exibidos dinamicamente na página do produto, destacando descontos e opções de parcelamento.
 
-- **Nome:** Parcelas Flex for Woocommerce
-- **Versão:** 1.0
-- **Compatibilidade:** WooCommerce 4.0+
-- **Desenvolvedor:**  José Jefferson
-- **Licença:** GPL-2.0+
 
-**Desenvolvido por José Jefferson, apaixonado por Wordpress.**
+== Screenshots ==
+
+Inclua imagens de tela que mostram o seu plugin em ação.
+
+== Perguntas Frequentes ==
+
+1. Funciona em produtos com variavel?.
+- Sim!
+2. é 100% gratuito?.
+- Sim!
+
+
+== Changelog ==
+
+= 1.0 =
+* Lançamento inicial.
+
+== Upgrade Notice ==
+
+
+= 1.0 =
+* Em breve Novas novidades e personalização.
+
+== Contribuidores ==
+
+* José Jefferson
+
+== Licença ==
+
+Este plugin está licenciado sob a Licença GPL, versão 2 ou posterior: https://www.gnu.org/licenses/gpl-2.0.html

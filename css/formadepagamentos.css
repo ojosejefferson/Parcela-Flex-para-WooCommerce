@@ -1,13 +1,9 @@
-/* Estilização adicional para destacar o pagamento PIX */
+/* Estilos gerais, aplicáveis a todos os dispositivos */
 .pix {
   background-color: #e5f9ef;
-  /* Cor de fundo para destacar PIX */
   padding: 15px;
-  /* Espaçamento interno para destacar */
   border-radius: 8px;
-  /* Bordas arredondadas */
   margin: 10px 0;
-  /* Margem para separar das outras opções */
 }
 
 /* Estilização para a cor do texto do método de pagamento PIX */
@@ -19,48 +15,68 @@
 /* Estilização para imagens dos ícones de pagamento */
 .icone-pagamento {
   width: 50px;
-  /* ajuste o tamanho como necessário */
   height: auto;
   display: block;
-  /* Para corrigir qualquer problema de alinhamento */
   margin-bottom: 10px;
-  /* Espaço abaixo da imagem */
 }
+
 
 /* Estilização para a opção de pagamento em geral */
 .opcao-pagamento {
-  cursor: pointer;
   display: flex;
-  /* Alinhamento dos itens em linha */
   align-items: center;
-  /* Alinhamento vertical ao centro */
   gap: 10px;
-  /* Espaço entre ícone e texto */
   margin-bottom: 10px;
   cursor: default;
 
 }
 
-/* Estilização para os spans de texto dentro das opções de pagamento */
 .opcao-pagamento .parcelas,
 .opcao-pagamento .preco,
 .opcao-pagamento .textodesconto {
   display: block;
-  /* Faz cada parte do texto aparecer em sua própria linha */
   line-height: 1.5;
-  /* Espaçamento da linha */
 }
 
-/* Estilização para o preço em todas as opções de pagamento */
 .opcao-pagamento .preco {
   font-weight: 700;
-  /* Peso da fonte para destacar (bold) */
   font-size: 1.2em;
-  /* Tamanho maior da fonte para mais destaque */
   color: #333;
-  /* Cor escura para maior contraste e destaque, ajuste como preferir */
 }
 
+
+
+/* Estilização para a opção de pagamento em Loops e Categoria */
+
+.melhor-parcela-loop-container {
+  font-size: 12px;
+}
+..desconto-boleto-loop-container {
+  font-size: 12px;
+}
+.opcao-pagamento2.pix {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 10px;
+  cursor: default;
+
+}
+
+.opcao-pagamento2 .parcelas,
+.opcao-pagamento2 .preco,
+.opcao-pagamento2 .textodesconto {
+  display: block;
+  line-height: 1;
+  font-size: 14px; 
+
+}
+
+.opcao-pagamento2 .preco {
+  font-weight: 700;
+  font-size: 1em;
+  color: #333;
+}
 /* Estilização adicional para destacar o pagamento PIX, mantendo o destaque no preço */
 .pix .preco {
   /* Aqui mantemos a cor verde específica para o preço no PIX, se quiser que se destaque ainda mais */
@@ -78,7 +94,7 @@
 
 .hWoKbG {
   background: rgb(64, 205, 40);
-  color: rgb(255, 255, 255);
+  color: white;
   font-size: 12px;
   line-height: 18px;
   font-weight: 900;
@@ -100,3 +116,77 @@
 .formasdepagamentos {
   padding: 10px 10px 10px 10px;
 }
+
+.product-label--on-sale {
+  background: blue;
+  color: #77c869;
+}
+.product-label {
+  display: inline-block;
+  padding: 4px 10px;
+  color: #fff;
+  border-radius: 3px;
+  font-weight: var(--text-font-bolder-weight);
+  font-size: calc(var(--base-text-font-size) - (var(--default-text-font-size) - 13px));
+  line-height: 1;
+  vertical-align: top;
+  width: -webkit-max-content;
+  width: -moz-max-content;
+  width: max-content;
+}
+
+.economize-label {
+  background-color: #000; /* Fundo preto */
+  color: #fff; /* Letra branca */
+  font-weight: 600; /* Peso da fonte 600 */
+  padding: 10px 20px; /* Espaçamento interno */
+  border-radius: 5px; /* Bordas arredondadas */
+  display: inline-block; /* Faz com que a label se ajuste ao conteúdo */
+  font-size: 1em; /* Tamanho da fonte */
+  /* Adicione outras propriedades de fonte conforme necessário */
+}
+
+
+/* Media query para dispositivos com largura máxima de 768px (tablets e smartphones) */
+@media (max-width: 768px) {
+  .icone-pagamento {
+    width: 30px; /* Reduz o tamanho do ícone */
+  }
+
+  .opcao-pagamento {
+    flex-direction: row; /* Empilha os itens verticalmente */
+    align-items: flex-start; /* Alinha itens à esquerda */
+  }
+
+  .opcao-pagamento .parcelas,
+  .opcao-pagamento .preco,
+  .opcao-pagamento .textodesconto {
+    display: inline; /* Exibe itens na mesma linha */
+    line-height: normal; /* Espaçamento de linha normal */
+  }
+
+  .opcao-pagamento .preco {
+    font-size: 1em; /* Reduz o tamanho da fonte */
+  }
+
+  .hWoKbG {
+    font-size: 10px; /* Reduz o tamanho da fonte da badge */
+    line-height: 16px; /* Ajusta o espaçamento da linha */
+  }
+}
+
+/* Media query para dispositivos com largura máxima de 480px (smartphones) */
+@media (max-width: 480px) {
+  .pix {
+    padding: 10px; /* Reduz o espaçamento interno */
+  }
+
+  .opcao-pagamento {
+    gap: 5px; /* Reduz o espaço entre ícone e texto */
+  }
+
+  .opcao-pagamento .preco {
+    font-size: 0.9em; /* Reduz ainda mais o tamanho da fonte */
+  }
+}
+

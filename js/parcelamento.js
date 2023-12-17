@@ -101,3 +101,48 @@ jQuery(document).ready(function ($) {
         }
     });
 });
+
+
+
+jQuery(document).ready(function ($) {
+    // ...
+
+    // Atualiza as informações quando uma variação é selecionada
+    $('form.variations_form').on('found_variation', function (event, variation) {
+        if (variation.display_price && variation.display_regular_price) {
+            atualizarEconomize(variation.display_regular_price, variation.display_price);
+        }
+    }).on('reset_data', function () {
+        var precoBase = obterPrecoInicial();
+        if (precoBase) {
+            atualizarEconomize(precoBase, precoBase); // Assuming the base price is the same for regular and sale prices
+        }
+    });
+
+    // Função para atualizar a economia
+    function atualizarEconomize(preco_regular, preco_venda) {
+        $.ajax({
+            url: meuPluginDeParcelamento.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'buscar_economize',
+                preco_regular: preco_regular,
+                preco_venda: preco_venda
+            },
+            success: function (response) {
+                if (response.success) {
+                    $('#economize-container').empty().html(response.data);
+                } else {
+                    $('#economize-container').html('Não foi possível obter as informações de economia.');
+                }
+            },
+            error: function (xhr, status, error) {
+                $('#economize-container').html('Erro ao buscar as informações de economia: ' + error);
+            }
+        });
+    }
+
+    // ...
+});
+
+
