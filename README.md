@@ -75,7 +75,7 @@ Exiba a melhor parcela disponível em páginas de loops utilizando este shortcod
 ## Descrição Técnica
 
 - **Nome:** Parcelas Flex for Woocommerce
-- **Versão:** 1.0
+- **Versão:** 2.0
 - **Compatibilidade:** WooCommerce 4.0+
 - **Desenvolvedor:**  José Jefferson
 - **Licença:** GPL-2.0+
