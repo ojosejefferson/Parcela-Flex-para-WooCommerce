@@ -94,6 +94,8 @@ Inclua imagens de tela que mostram o seu plugin em ação.
 
 == Upgrade Notice ==
 
+= 1.1 =
+* Um Pequeno erro de logica no melhor parcela.
 
 = 1.0 =
 * Em breve Novas novidades e personalização.

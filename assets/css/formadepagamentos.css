@@ -1,3 +1,23 @@
+.economize-container {
+  display: flex;
+  align-items: center;
+}
+
+.economize-container img {
+  width: 24px; /* Ajuste o tamanho conforme necessário */
+  height: 24px; /* Ajuste o tamanho conforme necessário */
+  margin-right: 8px; /* Espaçamento entre a imagem e o texto */
+}
+
+.economize-container .economize-text {
+  font-weight: bold;
+}
+
+.economize-container .economize-amount {
+  margin-left: 8px; /* Espaçamento entre o texto e o valor economizado */
+}
+
+
 /* Estilos gerais, aplicáveis a todos os dispositivos */
 .pix {
   background-color: #e5f9ef;
@@ -48,7 +68,7 @@
 
 /* Estilização para a opção de pagamento em Loops e Categoria */
 
-.melhor-parcela-loop-container {
+.melhor-parcelas_loop-container {
   font-size: 12px;
 }
 ..desconto-boleto-loop-container {
@@ -122,7 +142,7 @@
   color: #77c869;
 }
 .product-label {
-  display: inline-block;
+  display: inline-flex;
   padding: 4px 10px;
   color: #fff;
   border-radius: 3px;
@@ -130,6 +150,7 @@
   font-size: calc(var(--base-text-font-size) - (var(--default-text-font-size) - 13px));
   line-height: 1;
   vertical-align: top;
+  width: 100%;
   width: -webkit-max-content;
   width: -moz-max-content;
   width: max-content;
