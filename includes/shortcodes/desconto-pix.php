@@ -30,22 +30,23 @@ class DescontoPixShortcode {
                     $preco_com_desconto_pix = $preco_minimo * (1 - ($desconto_pix / 100));
                     $preco_formatado = wc_price($preco_com_desconto_pix);
                     $output .= '
-                    <div class="opcao-pagamento pix" itemscope itemtype="http://schema.org/PaymentMethod">
-                    <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-pix.svg" alt="Ícone de boleto" width="20" heigth="20">
+                    <div class="opcao-pagamento pix" itemscope itemtype="https://schema.org/Offer">
+                        <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-pix.svg" alt="Ícone de Pix" width="20" height="20">
                         <span class="parcelas">' . esc_html($texto_a_vista) . '</span>
-                        <span class="preco" itemprop="price">' . $preco_formatado . '</span>
-                        <div class="desconto-container" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-                            <meta itemprop="price" content="' . esc_attr($preco_formatado) . '">
+                        <div class="desconto-container">
+                            <span class="preco" itemprop="price">' . $preco_formatado . '</span>
                             <meta itemprop="priceCurrency" content="BRL">
-                            <span class="textodesconto" itemprop="description">' . esc_html($texto_no_pix) . '</span>
+                            <span class="textodesconto">' . esc_html($texto_no_pix) . '</span>
                             <div class="badge-container">
-                                <div class="best-price__Badge-sc-1v0eo34-3 hWoKbG badge" itemprop="discount">
+                                <div class="best-price__Badge-sc-1v0eo34-3 hWoKbG badge">
                                     <!-- SVG code -->
                                     -' . $desconto_pix . '%
                                 </div>
                             </div>
                         </div>
                     </div>';
+                    
+                    
                 } else {
                     $output .= "<p>Selecione uma opção de produto para ver o desconto do Pix.</p>";
                 }
@@ -56,18 +57,17 @@ class DescontoPixShortcode {
                 $preco_com_desconto_pix = $preco * (1 - ($desconto_pix / 100));
                 $preco_formatado = wc_price($preco_com_desconto_pix);
                 $output .= '
-                <div class="opcao-pagamento pix" itemscope itemtype="http://schema.org/PaymentMethod">
-                <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-pix.svg" alt="Ícone de boleto" width="25" heigth="25">
+                <div class="opcao-pagamento pix" itemscope itemtype="https://schema.org/Offer">
+                    <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-pix.svg" alt="Ícone de Pix" width="20" height="20">
                     <span class="parcelas">' . esc_html($texto_a_vista) . '</span>
-                    <span class="preco" itemprop="price">' . $preco_formatado . '</span>
-                    <div class="desconto-container" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-                        <meta itemprop="price">
+                    <div class="desconto-container">
+                        <span class="preco" itemprop="price">' . $preco_formatado . '</span>
                         <meta itemprop="priceCurrency" content="BRL">
-                        <span class="textodesconto" itemprop="description">' . esc_html($texto_no_pix) . '</span>
+                        <span class="textodesconto">' . esc_html($texto_no_pix) . '</span>
                         <div class="badge-container">
                             <div class="best-price__Badge-sc-1v0eo34-3 hWoKbG badge">
                                 <!-- SVG code -->
-                                <span itemprop="discount">-' . $desconto_pix . '%</span>
+                                -' . $desconto_pix . '%
                             </div>
                         </div>
                     </div>
@@ -98,22 +98,25 @@ class DescontoPixShortcode {
         $preco_com_desconto_pix = $preco * (1 - ($desconto_pix / 100));
         $preco_formatado = wc_price($preco_com_desconto_pix);
 
-        wp_send_json_success('<div class="opcao-pagamento pix" itemscope itemtype="http://schema.org/PaymentMethod">
-        <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-pix.svg" alt="Ícone de boleto" width="20" heigth="20">
-        <span class="parcelas">' . esc_html($texto_a_vista) . '</span>
-        <span class="preco" itemprop="price">' . $preco_formatado . '</span>
-        <div class="desconto-container" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-            <meta itemprop="price">
+        wp_send_json_success('
+        <div class="opcao-pagamento pix" itemscope itemtype="https://schema.org/Offer">
+            <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-pix.svg" alt="Ícone de Pix" width="20" height="20">
+            <span class="parcelas">' . esc_html($texto_a_vista) . '</span>
+            <span class="preco" itemprop="price">' . $preco_formatado . '</span>
             <meta itemprop="priceCurrency" content="BRL">
-            <span class="textodesconto" itemprop="description">'. esc_html($texto_no_pix) .'</span>
-            <div class="badge-container">
-                <div class="best-price__Badge-sc-1v0eo34-3 hWoKbG badge">
-                    <!-- SVG code -->
-                    <span itemprop="discount">-' . $desconto_pix . '%</span>
+            <div class="desconto-container">
+                <span class="textodesconto">' . esc_html($texto_no_pix) . '</span>
+                <div class="badge-container">
+                    <div class="best-price__Badge-sc-1v0eo34-3 hWoKbG badge">
+                        <!-- SVG code -->
+                        -' . $desconto_pix . '%
+                    </div>
                 </div>
             </div>
         </div>
-    </div>');
+    ');
+    
+        
         wp_die();
     }
 
@@ -147,24 +150,22 @@ class DescontoPixShortcode {
 
         // Aqui você pode adicionar o HTML personalizado para o loop
         $output .= '
-        <div class="opcao-pagamento2 pix" itemscope itemtype="http://schema.org/PaymentMethod">
-        <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-pix.svg" alt="Ícone de boleto" width="20" heigth="20">
+        <div class="opcao-pagamento pix" itemscope itemtype="https://schema.org/Offer">
+            <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-pix.svg" alt="Ícone de Pix" width="20" height="20">
             <span class="parcelas">' . esc_html($texto_a_vista) . '</span>
-            <span class="preco" itemprop="price">' . $preco_formatado . '</span>
-            <div class="desconto-container" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-                <meta itemprop="price">
+            <div class="desconto-container">
+                <span class="preco" itemprop="price">' . $preco_formatado . '</span>
                 <meta itemprop="priceCurrency" content="BRL">
-                <span class="textodesconto" itemprop="description">'. esc_html($texto_no_pix) .'</span>
+                <span class="textodesconto">' . esc_html($texto_no_pix) . '</span>
                 <div class="badge-container">
                     <div class="best-price__Badge-sc-1v0eo34-3 hWoKbG badge">
                         <!-- SVG code -->
-                        <span itemprop="discount">-' . $desconto_pix . '%</span>
+                        -' . $desconto_pix . '%
                     </div>
                 </div>
             </div>
         </div>';
-
-        $output .= "</div>";
+        
 
         return $output;
     }

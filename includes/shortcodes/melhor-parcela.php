@@ -44,11 +44,12 @@ class MelhorParcelasShortcode {
                 if ($juros !== '' && is_numeric($juros) && floatval($juros) >= 0) {
                     $juros = floatval($juros);
 
-                    // Se a taxa de juros for zero, trata como "sem juros"
-                    if ($juros == 0) {
-                        $valor_parcela = $preco / $i;
-                        $ultima_parcelas_sem_juros = "{$i}x de " . wc_price($valor_parcela) . " " . esc_html($texto_melhor_parcela);
-                    }
+// Se a taxa de juros for zero, trata como "sem juros"
+if ($juros == 0) {
+    $valor_parcela = $preco / $i;
+    $ultima_parcelas_sem_juros = "{$i}x de <span class=\"precos\">" . wc_price($valor_parcela) . "</span> " . esc_html($texto_melhor_parcela);
+}
+
                 }
             }
 
@@ -57,7 +58,7 @@ class MelhorParcelasShortcode {
                 return '<div id="melhor-parcelas_container">
                 <div class="opcao-pagamento" itemscope itemtype="http://schema.org/PaymentMethod">
                     <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-card.svg" alt="Ícone de cartão" width="20" height="20">
-                    <span class="parcelas">' . $ultima_parcelas_sem_juros . '</span>
+                    <span class="">'. $ultima_parcelas_sem_juros . '</span>
                 </div>
             </div>';            
             }
@@ -95,10 +96,10 @@ class MelhorParcelasShortcode {
             // Se a última parcela sem juros for encontrada, mostra como melhor parcela
             if ($melhor_parcelas_sem_juros > 0) {
                 wp_send_json_success('
-                <div class="opcao-pagamento" itemscope itemtype="http://schema.org/PaymentMethod">
+                <div class="opcao-pagamento">
                 <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-card.svg" alt="Ícone de boleto" width="20" height="20">
                 <span class="parcelas">' . $melhor_parcelas_sem_juros . 'x de</span>
-                    <span class="preco" itemprop="price">' . wc_price($valor_melhor_parcela) . '</span>
+                    <span class="preco">' . wc_price($valor_melhor_parcela) . '</span>
                     <span class="parcelas">' . esc_html($texto_melhor_parcela) . '</span>
                 </div>
                 ');
@@ -107,7 +108,7 @@ class MelhorParcelasShortcode {
 
         // Se o preço do produto for menor ou igual ao valor mínimo para parcelamento, exiba apenas 1x sem juros
         wp_send_json_success('
-        <div class="opcao-pagamento" itemscope itemtype="http://schema.org/PaymentMethod">
+        <div class="opcao-pagamento" itemscope">
         <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-card.svg" alt="Ícone de boleto" width="20" height="20">
         <span class="parcelas">1x de</span>
             <span class="preco" itemprop="price">' . wc_price($preco) . '</span>

@@ -22,7 +22,7 @@ function parcelas_flex_parcelamento_settings_page()
                             <!-- Conteúdo da segunda coluna aqui -->
                             <h3>Configure a Taxa de Juros Por Parcela</h3>
                             <p>
-                                <strong>Digite 0 </strong>para parcelamento sem juros
+                                <strong>Digite 0 </strong>para parcelamento sem juros ou deixe em branco para não mostrar a parcela
                             </p>
 
                             <?php for ($i = 1; $i <= 12; $i++) : ?>
@@ -33,7 +33,7 @@ function parcelas_flex_parcelamento_settings_page()
                                     </div>
                                 </div>
                             <?php endfor; ?>
-                            <p>Informações de Shortcode</p> <a href="">ver os shortcodes</a>
+                            <p>Informações de Shortcode</p> <a href="https://github.com/ojosejefferson/Parcelas-Flex-For-WooCommerce" target="_blank">ver os shortcodes</a>
                         </div>
 
 

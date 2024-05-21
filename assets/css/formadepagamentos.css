@@ -64,6 +64,12 @@
   color: #333;
 }
 
+ .precos {
+  font-weight: 700;
+  font-size: 1.2em;
+  color: #333;
+}
+
 
 
 /* Estilização para a opção de pagamento em Loops e Categoria */

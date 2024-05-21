@@ -89,12 +89,13 @@ class DescontoBoletoShortcode {
         $texto_a_boleto = get_option('parcelas_flex_texto_a_boleto', 'à vista Boleto');
         $texto_no_boleto = get_option('parcelas_flex_texto_no_boleto', 'no Boleto');
 
-        return '<div class="opcao-pagamento img-economize" itemscope itemtype="http://schema.org/PaymentMethod">
-        <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-boleto.svg" alt="Ícone de desconto" width="20" heigth="20">
-        <span class="preco" itemprop="price"> ' . $preco_formatado . ' </span>
-        <span class="parcelas">' . esc_html($texto_a_boleto) . ' <span itemprop="name"> ' . esc_html($texto_no_boleto) .' </span></span>
+        return '<div class="opcao-pagamento img-economize">
+        <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-boleto.svg" alt="Ícone de desconto" width="20" height="20">
+        <span class="preco"> ' . $preco_formatado . ' </span>
+        <span class="parcelas">' . esc_html($texto_a_boleto) . ' <span> ' . esc_html($texto_no_boleto) .' </span></span>
         <div class="best-price__Badge-sc-1v0eo34-3 hWoKbG badge">' . (-$desconto_boleto) . '%</div>
     </div>';
+    
 
 
     }
