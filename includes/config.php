@@ -150,6 +150,7 @@ function parcelas_flex_parcelamento_settings_page()
 
 function parcelas_flex_registrar_configuracoes()
 {
+    // Registro de campos individuais
     register_setting('parcelas_flex-opcoes-pagamento', 'desconto_pix');
     register_setting('parcelas_flex-opcoes-pagamento', 'desconto_boleto');
     register_setting('parcelas_flex-opcoes-pagamento', 'valor_minimo_parcela');
@@ -161,11 +162,13 @@ function parcelas_flex_registrar_configuracoes()
     register_setting('parcelas_flex-opcoes-pagamento', 'parcelas_flex_texto_economize');
     register_setting('parcelas_flex-opcoes-pagamento', 'parcelas_flex_texto_melhor_parcela');
     register_setting('parcelas_flex-opcoes-pagamento', 'parcelas_flex_texto_melhor_parcelas_cjuros');
-    
 
-
-    // ... registrar as outras configurações ...
+    // Loop para registrar as taxas de juros por parcela
+    for ($i = 1; $i <= 12; $i++) {
+        register_setting('parcelas_flex-opcoes-pagamento', "parcelamento_juros_$i");
+    }
 }
 
 add_action('admin_init', 'parcelas_flex_registrar_configuracoes');
+
 ?>
