@@ -150,6 +150,10 @@ function parcelas_flex_parcelamento_settings_page()
 
 function parcelas_flex_registrar_configuracoes()
 {
+    register_setting('parcelas_flex-opcoes-pagamento', 'desconto_pix');
+    register_setting('parcelas_flex-opcoes-pagamento', 'desconto_boleto');
+    register_setting('parcelas_flex-opcoes-pagamento', 'valor_minimo_parcela');
+    register_setting('parcelas_flex-opcoes-pagamento', 'exibir_juros_porcentagem');
     register_setting('parcelas_flex-opcoes-pagamento', 'parcelas_flex_texto_a_vista');
     register_setting('parcelas_flex-opcoes-pagamento', 'parcelas_flex_texto_no_pix');
     register_setting('parcelas_flex-opcoes-pagamento', 'parcelas_flex_texto_a_boleto');
@@ -157,6 +161,7 @@ function parcelas_flex_registrar_configuracoes()
     register_setting('parcelas_flex-opcoes-pagamento', 'parcelas_flex_texto_economize');
     register_setting('parcelas_flex-opcoes-pagamento', 'parcelas_flex_texto_melhor_parcela');
     register_setting('parcelas_flex-opcoes-pagamento', 'parcelas_flex_texto_melhor_parcelas_cjuros');
+    
 
 
     // ... registrar as outras configurações ...
