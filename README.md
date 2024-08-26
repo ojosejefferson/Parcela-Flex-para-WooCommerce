@@ -1,4 +1,4 @@
-# Parcelas-Flex-For-WooCommerce
+# Parcelas Flex For WooCommerce
  
 
 O plugin é uma solução robusta para o WooCommerce, adicionando opções de parcelamento com descontos exclusivos para Pix e Boleto. Funciona para produtos variavel Desenvolvido 100% no Brasil, nosso plugin visa otimizar a conversão de vendas, oferecendo flexibilidade e vantagens aos seus clientes.
