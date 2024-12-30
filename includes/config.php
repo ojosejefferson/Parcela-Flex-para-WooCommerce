@@ -7,142 +7,230 @@ function parcelas_flex_parcelamento_settings_page()
 ?>
 
 
-<div class="wrap">
-    <h2>Configurações de Parcelamento</h2>
+<div class="wrap parcelas-flex-admin">
+    <div class="pf-header">
+        <h1>Configurações Parcelas Flex</h1>
+        <p class="pf-description">Configure as opções de parcelamento e descontos para sua loja</p>
+    </div>
 
-    <form method="post" action="options.php" class="mt-4">
-        <?php settings_fields('parcelas-flex-parcelamento-settings-group'); ?>
-        <?php do_settings_sections('parcelas-flex-parcelamento-settings-group'); ?>
+    <form method="post" action="options.php" class="pf-form">
+        <?php 
+        settings_fields('parcelas-flex-parcelamento-settings-group');
+        do_settings_sections('parcelas-flex-parcelamento-settings-group');
+        settings_fields('parcelas_flex-opcoes-pagamento');
+        do_settings_sections('parcelas_flex-opcoes-pagamento');
+        ?>
 
-        <div class="metabox-holder">
-            <div class="postbox">
-                <div class="inside">
-                    <div style="display: flex;">
-                        <div style="flex: 1;">
-                            <!-- Conteúdo da segunda coluna aqui -->
-                            <h3>Configure a Taxa de Juros Por Parcela</h3>
-                            <p>
-                                <strong>Digite 0 </strong>para parcelamento sem juros ou deixe em branco para não mostrar a parcela
-                            </p>
+        <div class="pf-grid">
+            <!-- Coluna de Descontos -->
+            <div class="pf-card">
+                <div class="pf-card-header">
+                    <h2>Configurações de Desconto</h2>
+                    <p>Configure os descontos para PIX e Boleto</p>
+                </div>
+                <div class="pf-card-content">
+                    <div class="pf-form-group">
+                        <label for="desconto_pix">
+                            <i class="dashicons dashicons-money-alt"></i>
+                            Desconto PIX (%)
+                        </label>
+                        <input type="number" 
+                               class="pf-input" 
+                               id="desconto_pix" 
+                               name="desconto_pix" 
+                               value="<?php echo esc_attr(get_option('desconto_pix')); ?>" 
+                               step="0.01" 
+                               min="0" 
+                               max="100">
+                    </div>
 
-                            <?php for ($i = 1; $i <= 12; $i++) : ?>
-                                <div class="row" style="margin-bottom: 18px;">
-                                    <div class="col">
-                                        <label for="parcelamento_juros_<?php echo $i; ?>">Taxa de Juros para <?php echo $i; ?>x (%)</label>
-                                        <input type="number" class="regular-text form-control mb-2" id="parcelamento_juros_<?php echo $i; ?>" name="parcelamento_juros_<?php echo $i; ?>" value="<?php echo esc_attr(get_option("parcelamento_juros_$i", 0)); ?>" step="0.01" min="0" max="100">
-                                    </div>
-                                </div>
-                            <?php endfor; ?>
-                            <p>Informações de Shortcode</p> <a href="https://github.com/ojosejefferson/Parcelas-Flex-For-WooCommerce" target="_blank">ver os shortcodes</a>
-                        </div>
+                    <div class="pf-form-group">
+                        <label for="desconto_boleto">
+                            <i class="dashicons dashicons-media-text"></i>
+                            Desconto Boleto (%)
+                        </label>
+                        <input type="number" 
+                               class="pf-input" 
+                               id="desconto_boleto" 
+                               name="desconto_boleto" 
+                               value="<?php echo esc_attr(get_option('desconto_boleto')); ?>" 
+                               step="0.01" 
+                               min="0" 
+                               max="100">
+                    </div>
 
+                    <div class="pf-form-group">
+                        <label for="valor_minimo_parcela">
+                            <i class="dashicons dashicons-calculator"></i>
+                            Valor Mínimo da Parcela (R$)
+                        </label>
+                        <input type="number" 
+                               class="pf-input" 
+                               id="valor_minimo_parcela" 
+                               name="valor_minimo_parcela" 
+                               value="<?php echo esc_attr(get_option('valor_minimo_parcela')); ?>" 
+                               step="0.01" 
+                               min="0">
+                    </div>
 
-                        <div style="flex: 1;">
-                            <h3>Configure o desconto e valor mínimo de parcela</h3>
-                            <p>
-                                <strong>Valor em % Pix e Boleto</strong> Real valor mínimo de parcela
-                            </p>
+                    <div class="pf-form-group pf-checkbox-group">
+                        <input type="checkbox" 
+                               id="exibir_juros_porcentagem" 
+                               name="exibir_juros_porcentagem" 
+                               value="1" 
+                               <?php checked(1, get_option('exibir_juros_porcentagem', 0)); ?>>
+                        <label for="exibir_juros_porcentagem">
+                            <i class="dashicons dashicons-visibility"></i>
+                            Exibir porcentagem de juros no frontend
+                        </label>
+                    </div>
+                </div>
+            </div>
 
-                            <!-- Conteúdo da primeira coluna aqui -->
-                            <div class="row mb-3" style="margin-bottom: 18px;"> 
-                                <div class="col">
-                                    <label for="desconto_pix">Desconto Pix (%)</label>
-                                    <input type="number" class="regular-text form-control mb-2" id="desconto_pix" name="desconto_pix" value="<?php echo esc_attr(get_option('desconto_pix')); ?>" step="0.01" min="0" max="100">
-                                </div>
+            <!-- Coluna de Parcelamento -->
+            <div class="pf-card">
+                <div class="pf-card-header">
+                    <h2>Configurações de Parcelamento</h2>
+                    <p>Configure as taxas de juros para cada parcela</p>
+                </div>
+                <div class="pf-card-content">
+                    <div class="pf-installments-grid">
+                        <?php for ($i = 1; $i <= 12; $i++) : ?>
+                            <div class="pf-form-group">
+                                <label for="parcelamento_juros_<?php echo $i; ?>">
+                                    <i class="dashicons dashicons-calendar"></i>
+                                    <?php echo $i; ?>x
+                                </label>
+                                <input type="number" 
+                                       class="pf-input" 
+                                       id="parcelamento_juros_<?php echo $i; ?>" 
+                                       name="parcelamento_juros_<?php echo $i; ?>" 
+                                       value="<?php echo esc_attr(get_option("parcelamento_juros_$i", 0)); ?>" 
+                                       step="0.01" 
+                                       min="0" 
+                                       max="100"
+                                       placeholder="Taxa %">
                             </div>
+                        <?php endfor; ?>
+                    </div>
+                </div>
+            </div>
 
-                            <div class="row mb-3" style="margin-bottom: 18px;">
-                                <div class="col">
-                                    <label for="desconto_boleto">Desconto Boleto (%)</label>
-                                    <input type="number" class="regular-text form-control mb-2" id="desconto_boleto" name="desconto_boleto" value="<?php echo esc_attr(get_option('desconto_boleto')); ?>" step="0.01" min="0" max="100">
-                                </div>
-                            </div>
+            <!-- Nova Coluna de Configurações de Texto -->
+            <div class="pf-card">
+                <div class="pf-card-header">
+                    <h2>Configurações de Texto</h2>
+                    <p>Personalize os textos exibidos na loja</p>
+                </div>
+                <div class="pf-card-content">
+                    <div class="pf-form-group">
+                        <label for="parcelas_flex_texto_a_vista">
+                            <i class="dashicons dashicons-edit"></i>
+                            Prefixo 'Pix'
+                        </label>
+                        <input type="text" 
+                               class="pf-input" 
+                               id="parcelas_flex_texto_a_vista" 
+                               name="parcelas_flex_texto_a_vista" 
+                               value="<?php echo esc_attr(get_option('parcelas_flex_texto_a_vista', 'à vista')); ?>"
+                               placeholder="Ex: à vista">
+                    </div>
 
+                    <div class="pf-form-group">
+                        <label for="parcelas_flex_texto_no_pix">
+                            <i class="dashicons dashicons-edit"></i>
+                            Sufixo 'Pix'
+                        </label>
+                        <input type="text" 
+                               class="pf-input" 
+                               id="parcelas_flex_texto_no_pix" 
+                               name="parcelas_flex_texto_no_pix" 
+                               value="<?php echo esc_attr(get_option('parcelas_flex_texto_no_pix', 'no Pix')); ?>"
+                               placeholder="Ex: no Pix">
+                    </div>
 
-                            <div class="row mb-3" style="margin-bottom: 18px;">
-                                <div class="col">
-                                    <label for="valor_minimo_parcela" >Valor mínimo da parcela (R$)</label>
-                                    <input type="number" class="regular-text form-control mb-2" id="valor_minimo_parcela" name="valor_minimo_parcela" value="<?php echo esc_attr(get_option('valor_minimo_parcela')); ?>" step="0.01" min="0">
-                                </div>
-                            </div>
+                    <div class="pf-form-group">
+                        <label for="parcelas_flex_texto_a_boleto">
+                            <i class="dashicons dashicons-edit"></i>
+                            Prefixo 'à vista Boleto'
+                        </label>
+                        <input type="text" 
+                               class="pf-input" 
+                               id="parcelas_flex_texto_a_boleto" 
+                               name="parcelas_flex_texto_a_boleto" 
+                               value="<?php echo esc_attr(get_option('parcelas_flex_texto_a_boleto', 'à vista Boleto')); ?>"
+                               placeholder="Ex: à vista Boleto">
+                    </div>
 
+                    <div class="pf-form-group">
+                        <label for="parcelas_flex_texto_no_boleto">
+                            <i class="dashicons dashicons-edit"></i>
+                            Prefixo 'no Boleto'
+                        </label>
+                        <input type="text" 
+                               class="pf-input" 
+                               id="parcelas_flex_texto_no_boleto" 
+                               name="parcelas_flex_texto_no_boleto" 
+                               value="<?php echo esc_attr(get_option('parcelas_flex_texto_no_boleto', 'no Boleto')); ?>"
+                               placeholder="Ex: no Boleto">
+                    </div>
 
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <input type="checkbox" id="exibir_juros_porcentagem" name="exibir_juros_porcentagem" value="1" <?php checked(1, get_option('exibir_juros_porcentagem', 0)); ?>>
-                                    <label for="exibir_juros_porcentagem">Exibir a porcentagem de juros no frontend</label>
-                                </div>
-                                <p></p>
-                                <?php
-                                // Saída de segurança, ação e opção de campos para a página de configurações
-                                settings_fields('parcelas_flex-opcoes-pagamento');
-                                do_settings_sections('parcelas_flex-opcoes-pagamento');
-                                // Campos de entrada para as preferências do usuário
-                                ?>
-                                <table style="text-align: left;">
-                    <tr>
-                        <th scope="row"><label for="parcelas_flex_texto_a_vista">Prefixo 'Pix'</label></th>
-                        <td>
-                            <input name="parcelas_flex_texto_a_vista" type="text" id="parcelas_flex_texto_a_vista" value="<?php echo esc_attr(get_option('parcelas_flex_texto_a_vista', 'à vista')); ?>" class="regular-text">
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><label for="parcelas_flex_texto_no_pix">Sufixo 'Pix'</label></th>
-                        <td>
-                            <input name="parcelas_flex_texto_no_pix" type="text" id="parcelas_flex_texto_no_pix" value="<?php echo esc_attr(get_option('parcelas_flex_texto_no_pix', 'no Pix')); ?>" class="regular-text">
-                        </td>
-                    </tr>
+                    <div class="pf-form-group">
+                        <label for="parcelas_flex_texto_economize">
+                            <i class="dashicons dashicons-edit"></i>
+                            Prefixo 'Economize no Pix'
+                        </label>
+                        <input type="text" 
+                               class="pf-input" 
+                               id="parcelas_flex_texto_economize" 
+                               name="parcelas_flex_texto_economize" 
+                               value="<?php echo esc_attr(get_option('parcelas_flex_texto_economize', 'Economize no Pix')); ?>"
+                               placeholder="Ex: Economize no Pix">
+                    </div>
 
-                    <tr>
-                        <th scope="row"><label for="parcelas_flex_texto_a_boleto">Prefixo 'à vista'</label></th>
-                        <td>
-                            <input name="parcelas_flex_texto_a_boleto" type="text" id="parcelas_flex_texto_a_boleto" value="<?php echo esc_attr(get_option('parcelas_flex_texto_a_boleto', 'à vista Boleto')); ?>" class="regular-text">
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><label for="parcelas_flex_texto_no_boleto">Prefixo 'no Boleto'</label></th>
-                        <td>
-                            <input name="parcelas_flex_texto_no_boleto" type="text" id="parcelas_flex_texto_no_boleto" value="<?php echo esc_attr(get_option('parcelas_flex_texto_no_boleto', 'no Boleto')); ?>" class="regular-text">
-                        </td>
-                    </tr>
+                    <div class="pf-form-group">
+                        <label for="parcelas_flex_texto_melhor_parcela">
+                            <i class="dashicons dashicons-edit"></i>
+                            Prefixo 'sem juros'
+                        </label>
+                        <input type="text" 
+                               class="pf-input" 
+                               id="parcelas_flex_texto_melhor_parcela" 
+                               name="parcelas_flex_texto_melhor_parcela" 
+                               value="<?php echo esc_attr(get_option('parcelas_flex_texto_melhor_parcela', 'sem juros')); ?>"
+                               placeholder="Ex: sem juros">
+                    </div>
 
-                    <tr>
-                        <th scope="row"><label for="parcelas_flex_texto_economize">Prefixo 'Economize no Pix'</label></th>
-                        <td>
-                            <input name="parcelas_flex_texto_economize" type="text" id="parcelas_flex_texto_economize" value="<?php echo esc_attr(get_option('parcelas_flex_texto_economize', 'Economize no Pix')); ?>" class="regular-text">
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <th scope="row"><label for="parcelas_flex_texto_melhor_parcela">Prefixo 'sem juros'</label></th>
-                        <td>
-                            <input name="parcelas_flex_texto_melhor_parcela" type="text" id="parcelas_flex_texto_melhor_parcela" value="<?php echo esc_attr(get_option('parcelas_flex_texto_melhor_parcela', 'sem juros')); ?>" class="regular-text">
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <th scope="row"><label for="parcelas_flex_texto_melhor_parcelas_cjuros">Prefixo 'com juros'</label></th>
-                        <td>
-                            <input name="parcelas_flex_texto_melhor_parcelas_cjuros" type="text" id="parcelas_flex_texto_melhor_parcelas_cjuros" value="<?php echo esc_attr(get_option('parcelas_flex_texto_melhor_parcelas_cjuros', 'com juros')); ?>" class="regular-text">
-                        </td>
-                    </tr>
-                </table>
-                            </div>
-                        </div> <!-- fim da coluna 1 -->
-
-                        
+                    <div class="pf-form-group">
+                        <label for="parcelas_flex_texto_melhor_parcelas_cjuros">
+                            <i class="dashicons dashicons-edit"></i>
+                            Prefixo 'com juros'
+                        </label>
+                        <input type="text" 
+                               class="pf-input" 
+                               id="parcelas_flex_texto_melhor_parcelas_cjuros" 
+                               name="parcelas_flex_texto_melhor_parcelas_cjuros" 
+                               value="<?php echo esc_attr(get_option('parcelas_flex_texto_melhor_parcelas_cjuros', 'com juros')); ?>"
+                               placeholder="Ex: com juros">
                     </div>
                 </div>
             </div>
         </div>
 
-        <button type="submit" class="button button-primary" style="margin-top: 15px;">Salvar Alterações</button>
-
+        <div class="pf-footer">
+            <button type="submit" class="button button-primary">
+                <i class="dashicons dashicons-saved"></i>
+                Salvar Alterações
+            </button>
+            <a href="https://github.com/ojosejefferson/Parcelas-Flex-For-WooCommerce" 
+               target="_blank" 
+               class="pf-docs-link">
+                <i class="dashicons dashicons-book"></i>
+                Documentação e Shortcodes
+            </a>
+        </div>
     </form>
-    
 </div>
-
-
 
 <?php
 }

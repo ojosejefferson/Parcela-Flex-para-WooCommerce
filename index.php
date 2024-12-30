@@ -98,6 +98,11 @@ function parcelas_flex_parcelamento_enqueue_scripts()
             'nonce' => wp_create_nonce('buscar_desconto_pix_nonce') // Cria um nonce para segurança
         ));
     }
+    
+    // Enqueue PIX discount styles on all pages that might show products
+    if (is_product() || is_shop() || is_product_category() || is_product_tag() || is_archive()) {
+        wp_enqueue_style('parcelas-flex-pix-discount-loop', plugin_dir_url(__FILE__) . 'assets/css/pix-discount-loop.css', array(), '2.0.0');
+    }
 }
 add_action('wp_enqueue_scripts', 'parcelas_flex_parcelamento_enqueue_scripts');
 
@@ -114,3 +119,12 @@ function add_custom_style()
 }
 add_action('wp_enqueue_scripts', 'add_custom_style');
 
+// Enqueue admin styles
+function parcelas_flex_admin_styles($hook) {
+    if ('woocommerce_page_parcelas-flex-parcelamento' !== $hook) {
+        return;
+    }
+    wp_enqueue_style('parcelas-flex-admin', plugin_dir_url(__FILE__) . 'assets/css/admin-style.css', array(), '2.0.0');
+    wp_enqueue_style('dashicons');
+}
+add_action('admin_enqueue_scripts', 'parcelas_flex_admin_styles');
