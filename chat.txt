@@ -1,3 +1,0 @@
-1) preciso que atualize a inteface matendo as  configurações e Funções  existentes no projeto atual, criando uma inteface moderna e dinâmica.
-2) preciso que mantenha a Configuração de texto para o usuario digitar de maneira dinamica tambem
-3) preciso atualizar ui e ux do shorrtcode do [desconto_pix_loop] removando o texto de deixando apenas o valor a Porcentagem  de desconto com a cor#77c869
