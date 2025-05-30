@@ -307,5 +307,19 @@ function parcelas_flex_enqueue_cart_scripts() {
 }
 add_action('wp_enqueue_scripts', 'parcelas_flex_enqueue_cart_scripts');
 
+// Função para garantir que o preço no Google Merchant Center seja o preço original
+function parcelas_flex_ensure_original_price_for_google($price, $product) {
+    // Retorna o preço original do produto, sem considerar descontos
+    return $product->get_regular_price();
+}
+add_filter('woocommerce_gpf_feed_item_price', 'parcelas_flex_ensure_original_price_for_google', 10, 2);
+
+// Função para garantir que o preço de venda no Google Merchant Center seja o preço original
+function parcelas_flex_ensure_original_sale_price_for_google($price, $product) {
+    // Retorna o preço original do produto, sem considerar descontos
+    return $product->get_regular_price();
+}
+add_filter('woocommerce_gpf_feed_item_sale_price', 'parcelas_flex_ensure_original_sale_price_for_google', 10, 2);
+
 
 
