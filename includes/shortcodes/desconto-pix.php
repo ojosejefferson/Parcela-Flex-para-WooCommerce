@@ -195,11 +195,12 @@ function mostrar_pix_shortcode_abaixo_do_preco($price_html, $product) {
         $preco_formatado = wc_price($preco_com_desconto_pix);
         
         // Adiciona o preço do Pix abaixo do preço normal
-        $price_html .= '<div class="desconto-pix-loop-simples" style="">';
+        $price_html .= '<div class="desconto-pix-loop-simples" style="color: #00a650; margin-top: 4px;  font-weight: 600;">';
         $price_html .= '<span class="preco-pix">' . $preco_formatado . ' </span>';
         $price_html .= '<span class="texto-pix">' . esc_html($texto_no_pix) . ' </span>';
-        $price_html .= '<span class="badge" style="background: #d1fae5; color: #065f46; font-size: 12px; padding: 2px 6px; border-radius: 4px;">-' . $desconto_pix . '%</span>';
+        $price_html .= '<span class="badge" style="background: #d1fae5; color: #00a650; font-size: 12px; font-weight: 600; padding: 2px 6px; border-radius: 4px;">-' . $desconto_pix . '%</span>';
         $price_html .= '</div>';
+        
         
     }
     
