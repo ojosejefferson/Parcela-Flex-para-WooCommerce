@@ -12,7 +12,7 @@ jQuery(function($) {
             data: data,
             success: function(response) {
                 if (response.success) {
-                    $('.parcelas-flex-cart-info p:first').html('Valor em Pix: ' + response.data.pix_value);
+                    $('.parcelas-flex-cart-info p:first').html('Total à vista no Pix ' + response.data.pix_value);
                 }
             }
         });

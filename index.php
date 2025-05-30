@@ -167,8 +167,8 @@ function parcelas_flex_show_cart_discount_info() {
     $valor_pix = $total - ($total * ($desconto_pix / 100));
     $valor_pix_formatado = wc_price($valor_pix);
 
-    echo '<div class="parcelas-flex-cart-info">';
-    echo '<p>Valor em Pix: ' . $valor_pix_formatado . '</p>';
+    echo '<div class="parcelas-flex-cart-info" style="color: #00a650; font-weight: 600;">';
+    echo '<p>Total à vista no Pix: ' . $valor_pix_formatado . '</p>';
     echo '<p>Parcelamento disponível em até 12x.</p>';
     echo '</div>';
 }
@@ -186,7 +186,7 @@ function parcelas_flex_add_pix_to_cart_fragments($fragments) {
     $valor_pix = $total - ($total * ($desconto_pix / 100));
     $valor_pix_formatado = wc_price($valor_pix);
 
-    $fragments['.parcelas-flex-cart-info p:first'] = '<p>Valor em Pix: ' . $valor_pix_formatado . '</p>';
+    $fragments['.parcelas-flex-cart-info p:first'] = '<p style="color: #00a650; font-weight: 600;">Total à vista no Pix: ' . $valor_pix_formatado . '</p>';
     
     return $fragments;
 }
@@ -239,7 +239,7 @@ function parcelas_flex_add_pix_to_fragments($fragments) {
     $valor_pix = $total - ($total * ($desconto_pix / 100));
     $valor_pix_formatado = wc_price($valor_pix);
 
-    $fragments['.parcelas-flex-cart-info p:first'] = '<p>Valor em Pix: ' . $valor_pix_formatado . '</p>';
+    $fragments['.parcelas-flex-cart-info p:first'] = '<p style="color: #00a650; font-weight: 600;">Total à vista no Pix: ' . $valor_pix_formatado . '</p>';
     
     return $fragments;
 }
