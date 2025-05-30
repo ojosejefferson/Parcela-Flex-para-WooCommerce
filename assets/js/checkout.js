@@ -16,18 +16,27 @@ jQuery(function($) {
         });
     }
 
-    // Atualiza o valor do Pix quando o frete é alterado
+    // Atualiza o valor do Pix junto com as atualizações do WooCommerce
     $(document.body).on('updated_checkout', function() {
-        updatePixValue();
+        // Aguarda a atualização do WooCommerce terminar
+        setTimeout(updatePixValue, 100);
     });
 
     // Atualiza o valor do Pix quando o método de pagamento é alterado
     $(document.body).on('payment_method_selected', function() {
-        updatePixValue();
+        // Aguarda a atualização do WooCommerce terminar
+        setTimeout(updatePixValue, 100);
     });
 
     // Atualiza o valor do Pix quando o endereço é alterado
     $(document.body).on('updated_checkout', function() {
-        updatePixValue();
+        // Aguarda a atualização do WooCommerce terminar
+        setTimeout(updatePixValue, 100);
+    });
+
+    // Atualiza o valor do Pix quando o frete é alterado
+    $(document.body).on('shipping_method_selected', function() {
+        // Aguarda a atualização do WooCommerce terminar
+        setTimeout(updatePixValue, 100);
     });
 }); 
