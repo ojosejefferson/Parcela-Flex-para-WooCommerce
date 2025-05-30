@@ -158,17 +158,37 @@ add_action('woocommerce_single_product_summary', 'parcelas_flex_add_whatsapp_sha
 // Adiciona informações de desconto e parcelamento na página do carrinho
 function parcelas_flex_show_cart_discount_info() {
     $cart = WC()->cart;
-    $total_produtos = (float) $cart->get_cart_contents_total();
-    $frete = (float) $cart->get_shipping_total();
-    $desconto_pix = floatval(get_option('desconto_pix', 0));
-    $preco_com_desconto_pix = $total_produtos * (1 - ($desconto_pix / 100));
-    $preco_com_desconto_pix += $frete;
-    $preco_formatado = wc_price($preco_com_desconto_pix);
+    if (!$cart) {
+        return;
+    }
+
+    $total = $cart->get_total('edit');
+    $desconto_pix = get_option('desconto_pix', 0);
+    $valor_pix = $total - ($total * ($desconto_pix / 100));
+    $valor_pix_formatado = wc_price($valor_pix);
 
     echo '<div class="parcelas-flex-cart-info">';
-    echo '<p>Valor em Pix: ' . $preco_formatado . '</p>';
+    echo '<p>Valor em Pix: ' . $valor_pix_formatado . '</p>';
     echo '<p>Parcelamento disponível em até 12x.</p>';
     echo '</div>';
+}
+
+// Adiciona o valor do Pix na resposta do update_cart
+add_filter('woocommerce_add_to_cart_fragments', 'parcelas_flex_add_pix_to_cart_fragments');
+function parcelas_flex_add_pix_to_cart_fragments($fragments) {
+    $cart = WC()->cart;
+    if (!$cart) {
+        return $fragments;
+    }
+
+    $total = $cart->get_total('edit');
+    $desconto_pix = get_option('desconto_pix', 0);
+    $valor_pix = $total - ($total * ($desconto_pix / 100));
+    $valor_pix_formatado = wc_price($valor_pix);
+
+    $fragments['.parcelas-flex-cart-info p:first'] = '<p>Valor em Pix: ' . $valor_pix_formatado . '</p>';
+    
+    return $fragments;
 }
 
 // Adiciona o script para atualização dinâmica no checkout
@@ -223,6 +243,14 @@ function parcelas_flex_add_pix_to_fragments($fragments) {
     
     return $fragments;
 }
+
+// Adiciona o script para atualização dinâmica no carrinho
+function parcelas_flex_enqueue_cart_scripts() {
+    if (is_cart()) {
+        wp_enqueue_script('parcelas-flex-cart', plugin_dir_url(__FILE__) . 'assets/js/cart.js', array('jquery'), null, true);
+    }
+}
+add_action('wp_enqueue_scripts', 'parcelas_flex_enqueue_cart_scripts');
 
 
 
