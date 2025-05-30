@@ -83,8 +83,8 @@ class DescontoPixShortcode {
                     <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-pix.svg" alt="Ícone de Pix" width="20" height="20">
                     <span class="parcelas">' . esc_html($texto_a_vista) . '</span>
                     <div class="desconto-container">
-                        <span class="preco">' . $preco_formatado . '</span>
-                        <span class="textodesconto">' . esc_html($texto_no_pix) . '</span>
+                        <span class="preco">' . $preco_formatado . ' </span>
+                        <span class="textodesconto"> ' . esc_html($texto_no_pix) . ' </span>
                         <div class="badge-container">
                             <div class="best-price__Badge-sc-1v0eo34-3 hWoKbG badge">
                                 -' . $desconto_pix . '%
@@ -123,7 +123,7 @@ class DescontoPixShortcode {
             <span class="parcelas">' . esc_html($texto_a_vista) . '</span>
             <span class="preco">' . $preco_formatado . '</span>
             <div class="desconto-container">
-                <span class="textodesconto">' . esc_html($texto_no_pix) . '</span>
+                <span class="textodesconto"> ' . esc_html($texto_no_pix) . ' </span>
                 <div class="badge-container">
                     <div class="best-price__Badge-sc-1v0eo34-3 hWoKbG badge">
                         <!-- SVG code -->
