@@ -35,6 +35,7 @@ class MelhorParcelasShortcode {
         if ($preco > 0) {
             // Inicializa a variável para armazenar a última parcela sem juros
             $ultima_parcelas_sem_juros = '';
+            $melhor_parcela = 0;
 
             // Calcula as parcelas normalmente
             for ($i = 1; $i <= 12; $i++) {
@@ -44,12 +45,12 @@ class MelhorParcelasShortcode {
                 if ($juros !== '' && is_numeric($juros) && floatval($juros) >= 0) {
                     $juros = floatval($juros);
 
-// Se a taxa de juros for zero, trata como "sem juros"
-if ($juros == 0) {
-    $valor_parcela = $preco / $i;
-    $ultima_parcelas_sem_juros = "{$i}x de <span class=\"precos\">" . wc_price($valor_parcela) . "</span> " . esc_html($texto_melhor_parcela);
-}
-
+                    // Se a taxa de juros for zero, atualiza a melhor parcela
+                    if ($juros == 0) {
+                        $valor_parcela = $preco / $i;
+                        $melhor_parcela = $i;
+                        $ultima_parcelas_sem_juros = "{$i}x de <span class=\"precos\">" . wc_price($valor_parcela) . "</span> " . esc_html($texto_melhor_parcela);
+                    }
                 }
             }
 
