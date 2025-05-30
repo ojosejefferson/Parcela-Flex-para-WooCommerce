@@ -7,7 +7,7 @@ jQuery(function($) {
         };
 
         $.ajax({
-            url: wc_checkout_params.ajax_url,
+            url: wc_checkout_params.wc_ajax_url.toString().replace('%%endpoint%%', 'update_order_review'),
             type: 'POST',
             data: data,
             success: function(response) {

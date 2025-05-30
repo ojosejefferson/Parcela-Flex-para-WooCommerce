@@ -215,7 +215,7 @@ function parcelas_flex_add_pix_to_fragments($fragments) {
     }
 
     $total = $cart->get_total('edit');
-    $desconto_pix = get_option('parcelas_flex_desconto_pix', 0);
+    $desconto_pix = get_option('desconto_pix', 0);
     $valor_pix = $total - ($total * ($desconto_pix / 100));
     $valor_pix_formatado = wc_price($valor_pix);
 
