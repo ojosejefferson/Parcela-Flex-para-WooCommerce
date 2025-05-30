@@ -171,19 +171,19 @@ function parcelas_flex_show_cart_discount_info() {
     // Obtém a porcentagem de desconto do Pix
     $desconto_pix = floatval(get_option('desconto_pix', 0));
     
-    // Obtém o valor total do carrinho (incluindo descontos do gateway)
+    // Obtém o valor total do carrinho (incluindo descontos do gateway e cupom)
     $total_carrinho = (float) $cart->get_total('edit');
     
-    // Calcula o desconto do gateway
-    $desconto_gateway = $total_produtos + $frete - $total_carrinho;
+    // Verifica se o método de pagamento é Pix
+    $is_pix = isset($_POST['payment_method']) && $_POST['payment_method'] === 'pix';
     
-    // Se já existe desconto do gateway e o método de pagamento é Pix, usa o valor total do carrinho
-    if ($desconto_gateway > 0 && isset($_POST['payment_method']) && $_POST['payment_method'] === 'pix') {
+    // Se o método de pagamento for Pix, usa o valor total do carrinho
+    if ($is_pix) {
         $preco_final = $total_carrinho;
     } else {
-        // Se o desconto do Pix estiver ativado, calcula o desconto
+        // Se não for Pix, calcula o valor com desconto do Pix
         if ($desconto_pix > 0) {
-            // Calcula o desconto apenas sobre o valor dos produtos
+            // Calcula o desconto apenas sobre o valor dos produtos (já considerando o cupom)
             $desconto_valor = $total_produtos * ($desconto_pix / 100);
             $preco_com_desconto_pix = $total_produtos - $desconto_valor;
             
@@ -191,7 +191,7 @@ function parcelas_flex_show_cart_discount_info() {
             $preco_final = $preco_com_desconto_pix + $frete;
         } else {
             // Se não houver desconto do Pix, usa o valor total do carrinho
-            $preco_final = $total_produtos + $frete;
+            $preco_final = $total_carrinho;
         }
     }
 
@@ -225,19 +225,19 @@ function parcelas_flex_add_pix_to_cart_fragments($fragments) {
     // Obtém a porcentagem de desconto do Pix
     $desconto_pix = floatval(get_option('desconto_pix', 0));
     
-    // Obtém o valor total do carrinho (incluindo descontos do gateway)
+    // Obtém o valor total do carrinho (incluindo descontos do gateway e cupom)
     $total_carrinho = (float) $cart->get_total('edit');
     
-    // Calcula o desconto do gateway
-    $desconto_gateway = $total_produtos + $frete - $total_carrinho;
+    // Verifica se o método de pagamento é Pix
+    $is_pix = isset($_POST['payment_method']) && $_POST['payment_method'] === 'pix';
     
-    // Se já existe desconto do gateway e o método de pagamento é Pix, usa o valor total do carrinho
-    if ($desconto_gateway > 0 && isset($_POST['payment_method']) && $_POST['payment_method'] === 'pix') {
+    // Se o método de pagamento for Pix, usa o valor total do carrinho
+    if ($is_pix) {
         $preco_final = $total_carrinho;
     } else {
-        // Se o desconto do Pix estiver ativado, calcula o desconto
+        // Se não for Pix, calcula o valor com desconto do Pix
         if ($desconto_pix > 0) {
-            // Calcula o desconto apenas sobre o valor dos produtos
+            // Calcula o desconto apenas sobre o valor dos produtos (já considerando o cupom)
             $desconto_valor = $total_produtos * ($desconto_pix / 100);
             $preco_com_desconto_pix = $total_produtos - $desconto_valor;
             
@@ -245,7 +245,7 @@ function parcelas_flex_add_pix_to_cart_fragments($fragments) {
             $preco_final = $preco_com_desconto_pix + $frete;
         } else {
             // Se não houver desconto do Pix, usa o valor total do carrinho
-            $preco_final = $total_produtos + $frete;
+            $preco_final = $total_carrinho;
         }
     }
 
@@ -270,19 +270,19 @@ function parcelas_flex_add_pix_to_fragments($fragments) {
     // Obtém a porcentagem de desconto do Pix
     $desconto_pix = floatval(get_option('desconto_pix', 0));
     
-    // Obtém o valor total do carrinho (incluindo descontos do gateway)
+    // Obtém o valor total do carrinho (incluindo descontos do gateway e cupom)
     $total_carrinho = (float) $cart->get_total('edit');
     
-    // Calcula o desconto do gateway
-    $desconto_gateway = $total_produtos + $frete - $total_carrinho;
+    // Verifica se o método de pagamento é Pix
+    $is_pix = isset($_POST['payment_method']) && $_POST['payment_method'] === 'pix';
     
-    // Se já existe desconto do gateway e o método de pagamento é Pix, usa o valor total do carrinho
-    if ($desconto_gateway > 0 && isset($_POST['payment_method']) && $_POST['payment_method'] === 'pix') {
+    // Se o método de pagamento for Pix, usa o valor total do carrinho
+    if ($is_pix) {
         $preco_final = $total_carrinho;
     } else {
-        // Se o desconto do Pix estiver ativado, calcula o desconto
+        // Se não for Pix, calcula o valor com desconto do Pix
         if ($desconto_pix > 0) {
-            // Calcula o desconto apenas sobre o valor dos produtos
+            // Calcula o desconto apenas sobre o valor dos produtos (já considerando o cupom)
             $desconto_valor = $total_produtos * ($desconto_pix / 100);
             $preco_com_desconto_pix = $total_produtos - $desconto_valor;
             
@@ -290,7 +290,7 @@ function parcelas_flex_add_pix_to_fragments($fragments) {
             $preco_final = $preco_com_desconto_pix + $frete;
         } else {
             // Se não houver desconto do Pix, usa o valor total do carrinho
-            $preco_final = $total_produtos + $frete;
+            $preco_final = $total_carrinho;
         }
     }
 
