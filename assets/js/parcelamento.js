@@ -35,7 +35,7 @@ jQuery(document).ready(function ($) {
             data: {
                 action: action,
                 preco: preco,
-                timestamp: new Date().getTime() // Adiciona um parâmetro de data e hora
+                nonce: parcelaFlexDeParcelamento.nonce
             },
             success: function (response) {
                 if (response.success) {
@@ -65,18 +65,26 @@ jQuery(document).ready(function ($) {
         atualizarInformacoes('boleto', preco);
         atualizarInformacoes('melhor_parcela', preco);
         atualizarInformacoes('tabela_parcelamento', preco);
-        atualizarInformacoes('economize', preco); // Adiciona a chamada para "economize"
+        atualizarInformacoes('economize', preco);
     }
 
     // Atualiza as informações quando uma variação é encontrada
-    $('form.variations_form').on('found_variation', function (event, variation) {
+    $('form.variations_form').on('show_variation', function (event, variation) {
         if (variation.display_price) {
             atualizarInformacoesVariacao(variation.display_price);
         }
     });
 
     // Atualiza as informações quando os dados da variação são redefinidos
-    $('form.variations_form').on('reset_data', function () {
+    $('form.variations_form').on('hide_variation', function () {
+        var precoBase = obterPrecoInicial();
+        if (precoBase) {
+            atualizarInformacoesVariacao(precoBase);
+        }
+    });
+
+    // Atualiza as informações quando o preço é alterado
+    $('form.variations_form').on('woocommerce_variation_has_changed', function () {
         var precoBase = obterPrecoInicial();
         if (precoBase) {
             atualizarInformacoesVariacao(precoBase);
