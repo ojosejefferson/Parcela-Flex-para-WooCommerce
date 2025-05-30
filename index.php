@@ -174,5 +174,6 @@ function parcelas_flex_show_cart_discount_info() {
     echo '<p>Parcelamento disponível em até 12x.</p>';
     echo '</div>';
 }
-add_action('woocommerce_cart_totals_after_order_total', 'parcelas_flex_show_cart_discount_info');
+add_action('woocommerce_proceed_to_checkout', 'parcelas_flex_show_cart_discount_info');
+add_action('woocommerce_review_order_before_payment', 'parcelas_flex_show_cart_discount_info');
 
