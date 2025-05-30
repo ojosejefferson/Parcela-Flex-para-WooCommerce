@@ -44,6 +44,7 @@ jQuery(function($) {
                 if (response.success && response.data) {
                     var cartTotal = parseFloat(response.data.cart_total) || 0;
                     var shippingTotal = parseFloat(response.data.shipping_total) || 0;
+                    var descontoGateway = parseFloat(response.data.desconto_gateway) || 0;
                     
                     // Se o total do carrinho for 0, tenta restaurar o último valor válido
                     if (cartTotal <= 0 && updateAttempts < maxUpdateAttempts) {
@@ -71,20 +72,24 @@ jQuery(function($) {
                     // Se chegou aqui, reseta as tentativas
                     updateAttempts = 0;
 
-                    // Calcula o valor total com frete
-                    var totalComFrete = cartTotal + shippingTotal;
-                    
-                    // Se o total for válido, salva o estado
-                    if (totalComFrete > 0) {
-                        salvarEstadoCarrinho(totalComFrete);
+                    // Se já existe desconto do gateway, usa o valor total do carrinho
+                    var valorFinalPix;
+                    if (descontoGateway > 0) {
+                        valorFinalPix = cartTotal + shippingTotal - descontoGateway;
+                    } else {
+                        // Calcula o desconto do Pix apenas sobre o valor dos produtos
+                        var descontoPix = parseFloat(response.data.desconto_pix) || 0;
+                        var descontoValor = cartTotal * (descontoPix / 100);
+                        var valorComDescontoPix = cartTotal - descontoValor;
+                        
+                        // Adiciona o frete ao valor com desconto
+                        valorFinalPix = valorComDescontoPix + shippingTotal;
                     }
                     
-                    // Calcula o desconto do Pix apenas sobre o valor dos produtos
-                    var descontoPix = parseFloat(response.data.desconto_pix) || 0;
-                    var valorComDescontoPix = cartTotal * (1 - (descontoPix / 100));
-                    
-                    // Adiciona o frete ao valor com desconto
-                    var valorFinalPix = valorComDescontoPix + shippingTotal;
+                    // Se o total for válido, salva o estado
+                    if (valorFinalPix > 0) {
+                        salvarEstadoCarrinho(valorFinalPix);
+                    }
                     
                     // Formata o valor final
                     var valorFormatado = new Intl.NumberFormat('pt-BR', {

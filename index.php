@@ -155,102 +155,128 @@ function parcelas_flex_add_whatsapp_share_button() {
 }
 add_action('woocommerce_single_product_summary', 'parcelas_flex_add_whatsapp_share_button', 20);
 
-// Adiciona informações de desconto e parcelamento na página do carrinho
+// Função para exibir o valor do Pix
 function parcelas_flex_show_cart_discount_info() {
     $cart = WC()->cart;
     if (!$cart) {
         return;
     }
 
-    $total = $cart->get_total('edit');
-    $desconto_pix = get_option('desconto_pix', 0);
-    $valor_pix = $total - ($total * ($desconto_pix / 100));
-    $valor_pix_formatado = wc_price($valor_pix);
+    // Obtém o valor total dos produtos (sem frete)
+    $total_produtos = (float) $cart->get_cart_contents_total();
+    
+    // Obtém o valor do frete
+    $frete = (float) $cart->get_shipping_total();
+    
+    // Obtém a porcentagem de desconto do Pix
+    $desconto_pix = floatval(get_option('desconto_pix', 0));
+    
+    // Obtém o valor total do carrinho (incluindo descontos do gateway)
+    $total_carrinho = (float) $cart->get_total('edit');
+    
+    // Calcula o desconto do gateway
+    $desconto_gateway = $total_produtos + $frete - $total_carrinho;
+    
+    // Se já existe desconto do gateway, usa o valor total do carrinho
+    if ($desconto_gateway > 0) {
+        $preco_final = $total_carrinho;
+    } else {
+        // Calcula o desconto apenas sobre o valor dos produtos
+        $desconto_valor = $total_produtos * ($desconto_pix / 100);
+        $preco_com_desconto_pix = $total_produtos - $desconto_valor;
+        
+        // Adiciona o frete ao valor com desconto
+        $preco_final = $preco_com_desconto_pix + $frete;
+    }
 
-    echo '<div class="parcelas-flex-cart-info" style="color: #00a650; font-weight: 600;">';
-    echo '<p>Total à vista no Pix: ' . $valor_pix_formatado . '</p>';
-    echo '<p>Parcelamento disponível em até 12x.</p>';
-    echo '</div>';
+    echo '<tr class="parcelas-flex-cart-info">';
+    echo '<th style="color: #00a650; font-weight: 600;">Total à vista no Pix:</th>';
+    echo '<td style="color: #00a650; font-weight: 600;">' . wc_price($preco_final) . '</td>';
+    echo '</tr>';
 }
 
-// Adiciona o valor do Pix na resposta do update_cart
-add_filter('woocommerce_add_to_cart_fragments', 'parcelas_flex_add_pix_to_cart_fragments');
+// Remove os hooks antigos
+remove_action('woocommerce_proceed_to_checkout', 'parcelas_flex_show_cart_discount_info');
+remove_action('woocommerce_review_order_before_payment', 'parcelas_flex_show_cart_discount_info');
+
+// Adiciona os novos hooks
+add_action('woocommerce_cart_totals_after_order_total', 'parcelas_flex_show_cart_discount_info');
+add_action('woocommerce_review_order_after_order_total', 'parcelas_flex_show_cart_discount_info');
+
+// Atualiza a função de fragments para usar o novo formato
 function parcelas_flex_add_pix_to_cart_fragments($fragments) {
     $cart = WC()->cart;
     if (!$cart) {
         return $fragments;
     }
 
-    $total = $cart->get_total('edit');
-    $desconto_pix = get_option('desconto_pix', 0);
-    $valor_pix = $total - ($total * ($desconto_pix / 100));
-    $valor_pix_formatado = wc_price($valor_pix);
+    // Obtém o valor total dos produtos (sem frete)
+    $total_produtos = (float) $cart->get_cart_contents_total();
+    
+    // Obtém o valor do frete
+    $frete = (float) $cart->get_shipping_total();
+    
+    // Obtém a porcentagem de desconto do Pix
+    $desconto_pix = floatval(get_option('desconto_pix', 0));
+    
+    // Obtém o valor total do carrinho (incluindo descontos do gateway)
+    $total_carrinho = (float) $cart->get_total('edit');
+    
+    // Calcula o desconto do gateway
+    $desconto_gateway = $total_produtos + $frete - $total_carrinho;
+    
+    // Se já existe desconto do gateway, usa o valor total do carrinho
+    if ($desconto_gateway > 0) {
+        $preco_final = $total_carrinho;
+    } else {
+        // Calcula o desconto apenas sobre o valor dos produtos
+        $desconto_valor = $total_produtos * ($desconto_pix / 100);
+        $preco_com_desconto_pix = $total_produtos - $desconto_valor;
+        
+        // Adiciona o frete ao valor com desconto
+        $preco_final = $preco_com_desconto_pix + $frete;
+    }
 
-    $fragments['.parcelas-flex-cart-info p:first'] = '<p style="color: #00a650; font-weight: 600;">Total à vista no Pix: ' . $valor_pix_formatado . '</p>';
+    $fragments['.parcelas-flex-cart-info'] = '<tr class="parcelas-flex-cart-info"><th style="color: #00a650; font-weight: 600;">Total à vista no Pix:</th><td style="color: #00a650; font-weight: 600;">' . wc_price($preco_final) . '</td></tr>';
     
     return $fragments;
 }
 
-// Adiciona o script para atualização dinâmica no checkout
-function parcelas_flex_enqueue_checkout_scripts() {
-    if (is_checkout()) {
-        wp_enqueue_script('parcelas-flex-checkout', plugin_dir_url(__FILE__) . 'assets/js/checkout.js', array('jquery'), null, true);
-        wp_localize_script('parcelas-flex-checkout', 'parcelasFlexCheckout', array(
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('parcelas_flex_checkout_nonce')
-        ));
-    }
-}
-add_action('wp_enqueue_scripts', 'parcelas_flex_enqueue_checkout_scripts');
-
-// Função para atualizar o valor do Pix via AJAX
-function parcelas_flex_update_pix_value() {
-    check_ajax_referer('parcelas_flex_checkout_nonce', 'nonce');
-    
-    $cart = WC()->cart;
-    if (!$cart) {
-        wp_send_json_error('Carrinho não encontrado');
-        wp_die();
-    }
-
-    $total_produtos = (float) $cart->get_cart_contents_total();
-    $frete = (float) $cart->get_shipping_total();
-    $desconto_pix = floatval(get_option('desconto_pix', 0));
-    
-    // Calcula o desconto apenas sobre o valor dos produtos
-    $preco_com_desconto_pix = $total_produtos * (1 - ($desconto_pix / 100));
-    
-    // Adiciona o frete ao valor com desconto
-    $preco_final = $preco_com_desconto_pix + $frete;
-    
-    wp_send_json_success(array(
-        'cart_total' => $total_produtos,
-        'shipping_total' => $frete,
-        'desconto_pix' => $desconto_pix,
-        'pix_value' => wc_price($preco_final)
-    ));
-}
-add_action('wp_ajax_parcelas_flex_update_pix_value', 'parcelas_flex_update_pix_value');
-add_action('wp_ajax_nopriv_parcelas_flex_update_pix_value', 'parcelas_flex_update_pix_value');
-
-// Hooks para exibir o valor do Pix
-add_action('woocommerce_proceed_to_checkout', 'parcelas_flex_show_cart_discount_info');
-add_action('woocommerce_review_order_before_payment', 'parcelas_flex_show_cart_discount_info');
-
-// Adiciona o valor do Pix na resposta do update_order_review
-add_filter('woocommerce_update_order_review_fragments', 'parcelas_flex_add_pix_to_fragments');
+// Atualiza a função de fragments do checkout
 function parcelas_flex_add_pix_to_fragments($fragments) {
     $cart = WC()->cart;
     if (!$cart) {
         return $fragments;
     }
 
-    $total = $cart->get_total('edit');
-    $desconto_pix = get_option('desconto_pix', 0);
-    $valor_pix = $total - ($total * ($desconto_pix / 100));
-    $valor_pix_formatado = wc_price($valor_pix);
+    // Obtém o valor total dos produtos (sem frete)
+    $total_produtos = (float) $cart->get_cart_contents_total();
+    
+    // Obtém o valor do frete
+    $frete = (float) $cart->get_shipping_total();
+    
+    // Obtém a porcentagem de desconto do Pix
+    $desconto_pix = floatval(get_option('desconto_pix', 0));
+    
+    // Obtém o valor total do carrinho (incluindo descontos do gateway)
+    $total_carrinho = (float) $cart->get_total('edit');
+    
+    // Calcula o desconto do gateway
+    $desconto_gateway = $total_produtos + $frete - $total_carrinho;
+    
+    // Se já existe desconto do gateway, usa o valor total do carrinho
+    if ($desconto_gateway > 0) {
+        $preco_final = $total_carrinho;
+    } else {
+        // Calcula o desconto apenas sobre o valor dos produtos
+        $desconto_valor = $total_produtos * ($desconto_pix / 100);
+        $preco_com_desconto_pix = $total_produtos - $desconto_valor;
+        
+        // Adiciona o frete ao valor com desconto
+        $preco_final = $preco_com_desconto_pix + $frete;
+    }
 
-    $fragments['.parcelas-flex-cart-info p:first'] = '<p style="color: #00a650; font-weight: 600;">Total à vista no Pix: ' . $valor_pix_formatado . '</p>';
+    $fragments['.parcelas-flex-cart-info'] = '<tr class="parcelas-flex-cart-info"><th style="color: #00a650; font-weight: 600;">Total à vista no Pix:</th><td style="color: #00a650; font-weight: 600;">' . wc_price($preco_final) . '</td></tr>';
     
     return $fragments;
 }
