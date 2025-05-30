@@ -177,16 +177,22 @@ function parcelas_flex_show_cart_discount_info() {
     // Calcula o desconto do gateway
     $desconto_gateway = $total_produtos + $frete - $total_carrinho;
     
-    // Se já existe desconto do gateway, usa o valor total do carrinho
-    if ($desconto_gateway > 0) {
+    // Se já existe desconto do gateway e o método de pagamento é Pix, usa o valor total do carrinho
+    if ($desconto_gateway > 0 && isset($_POST['payment_method']) && $_POST['payment_method'] === 'pix') {
         $preco_final = $total_carrinho;
     } else {
-        // Calcula o desconto apenas sobre o valor dos produtos
-        $desconto_valor = $total_produtos * ($desconto_pix / 100);
-        $preco_com_desconto_pix = $total_produtos - $desconto_valor;
-        
-        // Adiciona o frete ao valor com desconto
-        $preco_final = $preco_com_desconto_pix + $frete;
+        // Se o desconto do Pix estiver ativado, calcula o desconto
+        if ($desconto_pix > 0) {
+            // Calcula o desconto apenas sobre o valor dos produtos
+            $desconto_valor = $total_produtos * ($desconto_pix / 100);
+            $preco_com_desconto_pix = $total_produtos - $desconto_valor;
+            
+            // Adiciona o frete ao valor com desconto
+            $preco_final = $preco_com_desconto_pix + $frete;
+        } else {
+            // Se não houver desconto do Pix, usa o valor total do carrinho
+            $preco_final = $total_produtos + $frete;
+        }
     }
 
     echo '<tr class="parcelas-flex-cart-info">';
@@ -225,16 +231,22 @@ function parcelas_flex_add_pix_to_cart_fragments($fragments) {
     // Calcula o desconto do gateway
     $desconto_gateway = $total_produtos + $frete - $total_carrinho;
     
-    // Se já existe desconto do gateway, usa o valor total do carrinho
-    if ($desconto_gateway > 0) {
+    // Se já existe desconto do gateway e o método de pagamento é Pix, usa o valor total do carrinho
+    if ($desconto_gateway > 0 && isset($_POST['payment_method']) && $_POST['payment_method'] === 'pix') {
         $preco_final = $total_carrinho;
     } else {
-        // Calcula o desconto apenas sobre o valor dos produtos
-        $desconto_valor = $total_produtos * ($desconto_pix / 100);
-        $preco_com_desconto_pix = $total_produtos - $desconto_valor;
-        
-        // Adiciona o frete ao valor com desconto
-        $preco_final = $preco_com_desconto_pix + $frete;
+        // Se o desconto do Pix estiver ativado, calcula o desconto
+        if ($desconto_pix > 0) {
+            // Calcula o desconto apenas sobre o valor dos produtos
+            $desconto_valor = $total_produtos * ($desconto_pix / 100);
+            $preco_com_desconto_pix = $total_produtos - $desconto_valor;
+            
+            // Adiciona o frete ao valor com desconto
+            $preco_final = $preco_com_desconto_pix + $frete;
+        } else {
+            // Se não houver desconto do Pix, usa o valor total do carrinho
+            $preco_final = $total_produtos + $frete;
+        }
     }
 
     $fragments['.parcelas-flex-cart-info'] = '<tr class="parcelas-flex-cart-info"><th style="color: #00a650; font-weight: 600;">Total à vista no Pix:</th><td style="color: #00a650; font-weight: 600;">' . wc_price($preco_final) . '</td></tr>';
@@ -264,16 +276,22 @@ function parcelas_flex_add_pix_to_fragments($fragments) {
     // Calcula o desconto do gateway
     $desconto_gateway = $total_produtos + $frete - $total_carrinho;
     
-    // Se já existe desconto do gateway, usa o valor total do carrinho
-    if ($desconto_gateway > 0) {
+    // Se já existe desconto do gateway e o método de pagamento é Pix, usa o valor total do carrinho
+    if ($desconto_gateway > 0 && isset($_POST['payment_method']) && $_POST['payment_method'] === 'pix') {
         $preco_final = $total_carrinho;
     } else {
-        // Calcula o desconto apenas sobre o valor dos produtos
-        $desconto_valor = $total_produtos * ($desconto_pix / 100);
-        $preco_com_desconto_pix = $total_produtos - $desconto_valor;
-        
-        // Adiciona o frete ao valor com desconto
-        $preco_final = $preco_com_desconto_pix + $frete;
+        // Se o desconto do Pix estiver ativado, calcula o desconto
+        if ($desconto_pix > 0) {
+            // Calcula o desconto apenas sobre o valor dos produtos
+            $desconto_valor = $total_produtos * ($desconto_pix / 100);
+            $preco_com_desconto_pix = $total_produtos - $desconto_valor;
+            
+            // Adiciona o frete ao valor com desconto
+            $preco_final = $preco_com_desconto_pix + $frete;
+        } else {
+            // Se não houver desconto do Pix, usa o valor total do carrinho
+            $preco_final = $total_produtos + $frete;
+        }
     }
 
     $fragments['.parcelas-flex-cart-info'] = '<tr class="parcelas-flex-cart-info"><th style="color: #00a650; font-weight: 600;">Total à vista no Pix:</th><td style="color: #00a650; font-weight: 600;">' . wc_price($preco_final) . '</td></tr>';
