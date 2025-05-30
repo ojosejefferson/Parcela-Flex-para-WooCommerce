@@ -132,8 +132,6 @@ class DescontoPixShortcode {
             return '<p>Desconto do Pix disponível apenas em loops de produtos.</p>';
         }
 
-        $output = "<div class='desconto-pix-loop-container'>";
-
         // Verifica se o produto é variável ou simples
         if ($product->is_type('variable')) {
             $preco = floatval($product->get_variation_price('min', true)); // Preço mínimo da variação
@@ -145,23 +143,11 @@ class DescontoPixShortcode {
         $preco_com_desconto_pix = $preco * (1 - ($desconto_pix / 100));
         $preco_formatado = wc_price($preco_com_desconto_pix);
 
-        // Aqui você pode adicionar o HTML personalizado para o loop
-        $output .= '
-        <div class="opcao-pagamento pix">
-            <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-pix.svg" alt="Ícone de Pix" width="20" height="20">
-            <span class="parcelas">' . esc_html($texto_a_vista) . '</span>
-            <div class="desconto-container">
-                <span class="preco">' . $preco_formatado . '</span>
-                <span class="textodesconto">' . esc_html($texto_no_pix) . '</span>
-                <div class="badge-container">
-                    <div class="best-price__Badge-sc-1v0eo34-3 hWoKbG badge">
-                        <!-- SVG code -->
-                        -' . $desconto_pix . '%
-                    </div>
-                </div>
-            </div>
-        </div>';
-        
+        // Layout simplificado apenas com o texto em verde
+        $output = '<div class="desconto-pix-loop-simples">';
+        $output .= '<span class="preco-pix">' . $preco_formatado . '</span>';
+        $output .= '<span class="texto-pix"> ' . esc_html($texto_no_pix) . '</span>';
+        $output .= '</div>';
 
         return $output;
     }
