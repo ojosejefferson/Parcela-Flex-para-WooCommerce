@@ -9,6 +9,7 @@ class MelhorParcelasShortcode {
         }
 
         $preco = 0; // Inicializa o preço como zero
+        $produto_disponivel = false;
 
         // Verifica se o produto é variável
         if ($product->is_type('variable')) {
@@ -20,49 +21,59 @@ class MelhorParcelasShortcode {
 
             // Itera sobre as variações para encontrar o preço mínimo
             foreach ($variacoes as $variacao) {
-                $preco_variacao = floatval($variacao['display_price']); // Obtém o preço de exibição da variação
-                if ($preco_variacao < $preco_minimo) {
-                    $preco_minimo = $preco_variacao;
-                }
-            }
-
-            $preco = $preco_minimo; // Define o preço como o preço mínimo encontrado
-        } else {
-            $preco = floatval($product->get_price()); // Obtém o preço do produto simples
-        }
-
-        // Verifica se o preço é maior que zero
-        if ($preco > 0) {
-            // Inicializa a variável para armazenar a última parcela sem juros
-            $ultima_parcelas_sem_juros = '';
-            $melhor_parcela = 0;
-
-            // Calcula as parcelas normalmente
-            for ($i = 1; $i <= 12; $i++) {
-                $juros = get_option("parcelamento_juros_$i", ''); // Obtém a taxa de juros como string
-
-                // Verifica se o campo de juros foi preenchido
-                if ($juros !== '' && is_numeric($juros) && floatval($juros) >= 0) {
-                    $juros = floatval($juros);
-
-                    // Se a taxa de juros for zero, atualiza a melhor parcela
-                    if ($juros == 0) {
-                        $valor_parcela = $preco / $i;
-                        $melhor_parcela = $i;
-                        $ultima_parcelas_sem_juros = "{$i}x de <span class=\"precos\">" . wc_price($valor_parcela) . "</span> " . esc_html($texto_melhor_parcela);
+                if ($variacao['is_purchasable'] && $variacao['is_in_stock']) {
+                    $produto_disponivel = true;
+                    $preco_variacao = floatval($variacao['display_price']);
+                    if ($preco_variacao < $preco_minimo) {
+                        $preco_minimo = $preco_variacao;
                     }
                 }
             }
 
-            // Verifica se a última parcela sem juros foi encontrada
-            if (!empty($ultima_parcelas_sem_juros)) {
-                return '<div id="melhor-parcelas_container">
-                <div class="opcao-pagamento">
-                    <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-card.svg" alt="Ícone de cartão" width="20" height="20">
-                    <span class="">'. $ultima_parcelas_sem_juros . '</span>
-                </div>
-            </div>';            
+            if ($produto_disponivel) {
+                $preco = $preco_minimo;
             }
+        } else {
+            if ($product->is_purchasable() && $product->is_in_stock()) {
+                $produto_disponivel = true;
+                $preco = floatval($product->get_price());
+            }
+        }
+
+        // Verifica se o produto está disponível e tem preço válido
+        if (!$produto_disponivel || $preco <= 0) {
+            return '';
+        }
+
+        // Inicializa a variável para armazenar a última parcela sem juros
+        $ultima_parcelas_sem_juros = '';
+        $melhor_parcela = 0;
+
+        // Calcula as parcelas normalmente
+        for ($i = 1; $i <= 12; $i++) {
+            $juros = get_option("parcelamento_juros_$i", ''); // Obtém a taxa de juros como string
+
+            // Verifica se o campo de juros foi preenchido
+            if ($juros !== '' && is_numeric($juros) && floatval($juros) >= 0) {
+                $juros = floatval($juros);
+
+                // Se a taxa de juros for zero, atualiza a melhor parcela
+                if ($juros == 0) {
+                    $valor_parcela = $preco / $i;
+                    $melhor_parcela = $i;
+                    $ultima_parcelas_sem_juros = "{$i}x de <span class=\"precos\">" . wc_price($valor_parcela) . "</span> " . esc_html($texto_melhor_parcela);
+                }
+            }
+        }
+
+        // Verifica se a última parcela sem juros foi encontrada
+        if (!empty($ultima_parcelas_sem_juros)) {
+            return '<div id="melhor-parcelas_container">
+            <div class="opcao-pagamento">
+                <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-card.svg" alt="Ícone de cartão" width="20" height="20">
+                <span class="">'. $ultima_parcelas_sem_juros . '</span>
+            </div>
+        </div>';            
         }
 
         return ''; // Se não houver parcela sem juros, retorna vazio
@@ -77,6 +88,13 @@ class MelhorParcelasShortcode {
         }
 
         $preco = floatval($_POST['preco']);
+        
+        // Verifica se o preço é válido
+        if ($preco <= 0 || $preco > 999999999) {
+            wp_send_json_success('');
+            wp_die();
+        }
+
         $valor_minimo_parcela = floatval(get_option('valor_minimo_parcela', 0)); // Valor definido pelo usuário
         $melhor_parcelas_sem_juros = 0;
         $valor_melhor_parcela = PHP_FLOAT_MAX;
@@ -104,6 +122,7 @@ class MelhorParcelasShortcode {
                     <span class="parcelas">' . esc_html($texto_melhor_parcela) . '</span>
                 </div>
                 ');
+                wp_die();
             }
         }
 
@@ -116,6 +135,7 @@ class MelhorParcelasShortcode {
             <span class="parcelas">' . esc_html($texto_melhor_parcela) . '</span>
         </div>
         ');
+        wp_die();
     }
 }
 
