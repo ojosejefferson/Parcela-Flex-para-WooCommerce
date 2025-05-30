@@ -16,7 +16,9 @@ class EconomizeShortcode {
         $desconto_pix = floatval(get_option('desconto_pix', 0));
 
         // Obter o preço de venda atual para produtos simples ou variáveis
-        $preco_venda = $product->is_type('variable') ? $product->get_variation_price('min', true) : $product->get_price();
+        $preco_venda = $product->is_type('variable') ? 
+            floatval($product->get_variation_price('min', true)) : 
+            floatval($product->get_price());
 
         // Calcular a economia no Pix com base no preço de venda atual
         $economia_pix = $preco_venda * ($desconto_pix / 100);
@@ -84,7 +86,9 @@ class EconomizeShortcode {
         $desconto_pix = floatval(get_option('desconto_pix', 0));
 
         // Obter o preço regular para produtos simples ou variáveis
-        $preco_regular = $product->is_type('variable') ? $product->get_variation_regular_price('min', true) : $product->get_regular_price();
+        $preco_regular = $product->is_type('variable') ? 
+            floatval($product->get_variation_regular_price('min', true)) : 
+            floatval($product->get_regular_price());
 
         // Calcular a economia no Pix com base no preço regular
         $economia_pix = $preco_regular * ($desconto_pix / 100);

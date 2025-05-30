@@ -12,41 +12,34 @@ class TabelaParcelamentoShortcode {
         $preco = $product->is_type('variable') ? $product->get_variation_price('min', true) : $product->get_price();
         $preco = floatval($preco);
         $valor_minimo_parcela = floatval(get_option('valor_minimo_parcela', 0)); // Valor definido pelo usuário
-        $exibir_juros = get_option('exibir_juros_porcentagem', 0); // Obtenha a opção de exibir juros
+        $exibir_juros = get_option('exibir_juros_porcentagem', '0') === '1'; // Corrigido para verificar se é '1'
 
         $output = "<div id='tabela-parcelamento-container'><table class='tabela-parcelamento'><tbody>";
 
         // Verifica se o preço do produto é maior que zero
-        if ($preco >= 0 && ($preco > $valor_minimo_parcela || $valor_minimo_parcela == 0)) {
-            // Se o preço do produto for menor ou igual a zero, exiba apenas 1x sem juros
-            if ($preco == 0 || $preco <= $valor_minimo_parcela) {
-                $output .= "<tr><td>1x de " . wc_price($preco) . " " . esc_html($texto_melhor_parcela) . "</td></tr>";
-            } else {
-                // Se o preço for maior, calcule as parcelas normalmente
-                for ($i = 1; $i <= 12; $i++) {
-                    $juros = get_option("parcelamento_juros_$i", ''); // Alterada para obter a taxa de juros como string
+        if ($preco > 0) {
+            // Sempre mostra todas as parcelas
+            for ($i = 1; $i <= 12; $i++) {
+                $juros = get_option("parcelamento_juros_$i", ''); // Obtém a taxa de juros
+                $juros = $juros === '' ? 0 : floatval($juros); // Se vazio, considera 0
 
-                    // Verifica se o campo de juros foi preenchido
-                    if ($juros !== '' && is_numeric($juros) && floatval($juros) >= 0) {
-                        $juros = floatval($juros);
+                // Se a taxa de juros for zero, trata como "sem juros"
+                if ($juros == 0) {
+                    $output .= "<tr><td>{$i}x de " . wc_price($preco / $i) . " " . esc_html($texto_melhor_parcela) . "</td></tr>";
+                } else {
+                    $valor_total_com_juros = $preco * (1 + ($juros / 100));
+                    $valor_parcela = $valor_total_com_juros / $i;
 
-                        // Se a taxa de juros for zero, trata como "sem juros"
-                        if ($juros == 0) {
-                            $output .= "<tr><td>{$i}x de " . wc_price($preco / $i) . " " . esc_html($texto_melhor_parcela) . "</td></tr>";
-                        } else {
-                            $valor_total_com_juros = $preco * (1 + ($juros / 100));
-                            $valor_parcela = $valor_total_com_juros / $i;
-
-                            // Verifique se a opção de exibir juros está ativada antes de adicionar ao output
-                            if ($exibir_juros) {
-                                $output .= "<tr><td>{$i}x de " . wc_price($valor_parcela) . " " . esc_html($texto_melhor_parcelas_cjuros) . " de {$juros}%</td></tr>";
-                            } else {
-                                $output .= "<tr><td>{$i}x de " . wc_price($valor_parcela) . " " . esc_html($texto_melhor_parcelas_cjuros) . "</td></tr>";
-                            }
-                        }
+                    // Verifique se a opção de exibir juros está ativada antes de adicionar ao output
+                    if ($exibir_juros) {
+                        $output .= "<tr><td>{$i}x de " . wc_price($valor_parcela) . " " . esc_html($texto_melhor_parcelas_cjuros) . " (" . number_format($juros, 1, ',', '.') . "%)</td></tr>";
+                    } else {
+                        $output .= "<tr><td>{$i}x de " . wc_price($valor_parcela) . " " . esc_html($texto_melhor_parcelas_cjuros) . "</td></tr>";
                     }
                 }
             }
+        } else {
+            $output .= "<tr><td>Produto indisponível</td></tr>";
         }
 
         $output .= "</tbody></table></div>"; // Fechamos o div do contêiner aqui
@@ -64,50 +57,30 @@ class TabelaParcelamentoShortcode {
 
         $preco = floatval($_POST['preco']);
         $valor_minimo_parcela = floatval(get_option('valor_minimo_parcela', 0)); // Valor definido pelo usuário
-        $exibir_juros = get_option('exibir_juros_porcentagem', 0); // Obtenha a opção de exibir juros
+        $exibir_juros = get_option('exibir_juros_porcentagem', '0') === '1'; // Corrigido para verificar se é '1'
 
         $output = "<table class='tabela-parcelamento'><tbody>";
 
         // Verifica se o preço do produto é maior que zero
-        if ($preco >= 0 && ($preco > $valor_minimo_parcela || $valor_minimo_parcela == 0)) {
-            // Se o preço do produto for menor ou igual a zero, exiba apenas 1x sem juros
-            if ($preco == 0 || $preco <= $valor_minimo_parcela) {
-                $output .= "<tr><td>1x de " . wc_price($preco) . " " . esc_html($texto_melhor_parcela) . "</td></tr>";
-            } else {
-                // Se o preço for maior, calcule as parcelas normalmente
-                $valores_preenchidos = false; // Flag para verificar se pelo menos um valor foi preenchido
+        if ($preco > 0) {
+            // Sempre mostra todas as parcelas
+            for ($i = 1; $i <= 12; $i++) {
+                $juros = get_option("parcelamento_juros_$i", ''); // Obtém a taxa de juros
+                $juros = $juros === '' ? 0 : floatval($juros); // Se vazio, considera 0
 
-                for ($i = 1; $i <= 12; $i++) {
-                    $juros = get_option("parcelamento_juros_$i", ''); // Obtenha o valor do juros
+                // Se a taxa de juros for zero, trata como "sem juros"
+                if ($juros == 0) {
+                    $output .= "<tr><td>{$i}x de " . wc_price($preco / $i) . " " . esc_html($texto_melhor_parcela) . "</td></tr>";
+                } else {
+                    $valor_total_com_juros = $preco * (1 + ($juros / 100));
+                    $valor_parcela = $valor_total_com_juros / $i;
 
-                    // Verifica se o campo de juros foi preenchido com um valor
-                    if ($juros !== '') {
-                        $juros = floatval($juros);
-
-                        // Se a taxa de juros for zero, trata como "sem juros"
-                        if ($juros == 0) {
-                            $output .= "<tr><td>{$i}x de " . wc_price($preco / $i) . " " . esc_html($texto_melhor_parcela) . "</td></tr>";
-                            $valores_preenchidos = true;
-                        } else {
-                            $valor_total_com_juros = $preco * (1 + ($juros / 100));
-                            $valor_parcela = $valor_total_com_juros / $i;
-
-                            // Verifique se a opção de exibir juros está ativada antes de adicionar ao output
-                            if ($exibir_juros) {
-                                $output .= "<tr><td>{$i}x de " . wc_price($valor_parcela) . " " . esc_html($texto_melhor_parcelas_cjuros) . " de {$juros}%</td></tr>";
-                            } else {
-                                $output .= "<tr><td>{$i}x de " . wc_price($valor_parcela) . " " . esc_html($texto_melhor_parcelas_cjuros) . "</td></tr>";
-                            }
-
-                            $valores_preenchidos = true;
-                        }
+                    // Verifique se a opção de exibir juros está ativada antes de adicionar ao output
+                    if ($exibir_juros) {
+                        $output .= "<tr><td>{$i}x de " . wc_price($valor_parcela) . " " . esc_html($texto_melhor_parcelas_cjuros) . " (" . number_format($juros, 1, ',', '.') . "%)</td></tr>";
+                    } else {
+                        $output .= "<tr><td>{$i}x de " . wc_price($valor_parcela) . " " . esc_html($texto_melhor_parcelas_cjuros) . "</td></tr>";
                     }
-                }
-
-                // Se nenhum valor foi preenchido, retorna uma mensagem de erro
-                if (!$valores_preenchidos) {
-                    wp_send_json_error('Nenhum valor de juros foi configurado.');
-                    wp_die();
                 }
             }
         }
