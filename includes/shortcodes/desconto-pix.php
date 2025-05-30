@@ -200,42 +200,33 @@ add_action('wp_enqueue_scripts', 'parcelas_flex_enqueue_styles');
 
 // Função para exibir o shortcode do Pix abaixo do preço
 function mostrar_pix_shortcode_abaixo_do_preco($price_html, $product) {
-    // Garante que só executa no frontend
+    // Evita execução no painel do WordPress
     if (is_admin()) {
         return $price_html;
     }
 
-    // Verifica se estamos em qualquer tipo de loop de produtos
-    if (is_shop() || 
-        is_product_category() || 
-        is_search() || 
-        is_product_tag() || 
-        is_product() || 
-        doing_action('woocommerce_after_shop_loop_item') || 
-        doing_action('woocommerce_after_shop_loop_item_title') ||
-        doing_action('woocommerce_before_shop_loop_item_title') ||
-        doing_action('woocommerce_shop_loop_item_title') ||
-        doing_action('woocommerce_after_single_product_summary') ||
-        doing_action('woocommerce_related_products')) {
-        
-        // Obtém o preço do produto
-        $preco = floatval($product->get_price());
-        $desconto_pix = floatval(get_option('desconto_pix', 0));
-        $texto_no_pix = get_option('parcelas_flex_texto_no_pix', 'no Pix');
-        
-        // Calcula o preço com desconto do Pix
-        $preco_com_desconto_pix = $preco * (1 - ($desconto_pix / 100));
-        $preco_formatado = wc_price($preco_com_desconto_pix);
-        
-        // Adiciona o preço do Pix abaixo do preço normal
-        $price_html .= '<div class="desconto-pix-loop-simples" style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">';
-        $price_html .= '<span class="preco-pix" style="color: #00a650; font-weight: 600;">' . $preco_formatado . ' </span>';
-        $price_html .= '<span class="texto-pix" style="color: #00a650; font-size: 0.95rem;">' . esc_html($texto_no_pix) . ' </span>';
-        $price_html .= '<span class="badge badge-pix" style="background: #d1fae5; color: #00a650; font-size: 12px; font-weight: 600; padding: 2px 6px; border-radius: 4px;">-' . $desconto_pix . '%</span>';
-        $price_html .= '</div>';
+    // Evita exibir no topo da página de produto individual
+    if (is_product() && !did_action('woocommerce_after_shop_loop_item')) {
+        return $price_html;
     }
-    
+
+    // Preço e cálculo do desconto Pix
+    $preco = floatval($product->get_price());
+    $desconto_pix = floatval(get_option('desconto_pix', 0));
+    $texto_no_pix = get_option('parcelas_flex_texto_no_pix', 'no Pix');
+
+    $preco_com_desconto_pix = $preco * (1 - ($desconto_pix / 100));
+    $preco_formatado = wc_price($preco_com_desconto_pix);
+
+    // HTML Pix abaixo do preço
+    $price_html .= '<div class="desconto-pix-loop-simples">';
+    $price_html .= '<span class="preco-pix">' . $preco_formatado . ' </span>';
+    $price_html .= '<span class="texto-pix">' . esc_html($texto_no_pix) . ' </span>';
+    $price_html .= '<span class="badge badge-pix">-' . $desconto_pix . '%</span>';
+    $price_html .= '</div>';
+
     return $price_html;
 }
 add_filter('woocommerce_get_price_html', 'mostrar_pix_shortcode_abaixo_do_preco', 30, 2);
+
 
