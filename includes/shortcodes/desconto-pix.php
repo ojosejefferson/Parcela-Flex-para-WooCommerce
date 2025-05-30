@@ -162,8 +162,8 @@ add_shortcode('desconto_pix_loop', array($desconto_pix_shortcode, 'parcelas_flex
 
 // Função para exibir o shortcode do Pix abaixo do preço
 function mostrar_pix_shortcode_abaixo_do_preco($price_html, $product) {
-    // Verifica se estamos na página do produto ou em um loop
-    if (is_product() || is_shop() || is_product_category() || is_product_tag()) {
+    // Verifica se estamos na página da loja, categoria, busca ou tag
+    if (is_shop() || is_product_category() || is_search() || is_product_tag()) {
         // Obtém o preço do produto
         $preco = floatval($product->get_price());
         $desconto_pix = floatval(get_option('desconto_pix', 0));
