@@ -159,3 +159,27 @@ add_shortcode('desconto_pix', array($desconto_pix_shortcode, 'parcelas_flexscont
 add_action('wp_ajax_buscar_desconto_pix', array($desconto_pix_shortcode, 'buscar_desconto_pix'));
 add_action('wp_ajax_nopriv_buscar_desconto_pix', array($desconto_pix_shortcode, 'buscar_desconto_pix'));
 add_shortcode('desconto_pix_loop', array($desconto_pix_shortcode, 'parcelas_flexsconto_pix_loop_shortcode'));
+
+// Função para exibir o shortcode do Pix abaixo do preço
+function mostrar_pix_shortcode_abaixo_do_preco($price_html, $product) {
+    // Verifica se estamos na página do produto ou em um loop
+    if (is_product() || is_shop() || is_product_category() || is_product_tag()) {
+        // Obtém o preço do produto
+        $preco = floatval($product->get_price());
+        $desconto_pix = floatval(get_option('desconto_pix', 0));
+        $texto_no_pix = get_option('parcelas_flex_texto_no_pix', 'no Pix');
+        
+        // Calcula o preço com desconto do Pix
+        $preco_com_desconto_pix = $preco * (1 - ($desconto_pix / 100));
+        $preco_formatado = wc_price($preco_com_desconto_pix);
+        
+        // Adiciona o preço do Pix abaixo do preço normal
+        $price_html .= '<div class="desconto-pix-loop-simples">';
+        $price_html .= '<span class="preco-pix">' . $preco_formatado . '</span>';
+        $price_html .= '<span class="texto-pix"> ' . esc_html($texto_no_pix) . '</span>';
+        $price_html .= '</div>';
+    }
+    
+    return $price_html;
+}
+add_filter('woocommerce_get_price_html', 'mostrar_pix_shortcode_abaixo_do_preco', 30, 2);
