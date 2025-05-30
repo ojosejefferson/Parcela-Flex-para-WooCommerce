@@ -56,7 +56,7 @@ if ($juros == 0) {
             // Verifica se a última parcela sem juros foi encontrada
             if (!empty($ultima_parcelas_sem_juros)) {
                 return '<div id="melhor-parcelas_container">
-                <div class="opcao-pagamento" itemscope itemtype="http://schema.org/PaymentMethod">
+                <div class="opcao-pagamento">
                     <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-card.svg" alt="Ícone de cartão" width="20" height="20">
                     <span class="">'. $ultima_parcelas_sem_juros . '</span>
                 </div>
@@ -108,10 +108,10 @@ if ($juros == 0) {
 
         // Se o preço do produto for menor ou igual ao valor mínimo para parcelamento, exiba apenas 1x sem juros
         wp_send_json_success('
-        <div class="opcao-pagamento" itemscope">
+        <div class="opcao-pagamento">
         <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-card.svg" alt="Ícone de boleto" width="20" height="20">
         <span class="parcelas">1x de</span>
-            <span class="preco" itemprop="price">' . wc_price($preco) . '</span>
+            <span class="preco">' . wc_price($preco) . '</span>
             <span class="parcelas">' . esc_html($texto_melhor_parcela) . '</span>
         </div>
         ');

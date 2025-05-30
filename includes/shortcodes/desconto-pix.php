@@ -30,12 +30,11 @@ class DescontoPixShortcode {
                     $preco_com_desconto_pix = $preco_minimo * (1 - ($desconto_pix / 100));
                     $preco_formatado = wc_price($preco_com_desconto_pix);
                     $output .= '
-                    <div class="opcao-pagamento pix" itemscope itemtype="https://schema.org/Offer">
+                    <div class="opcao-pagamento pix">
                         <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-pix.svg" alt="Ícone de Pix" width="20" height="20">
                         <span class="parcelas">' . esc_html($texto_a_vista) . '</span>
                         <div class="desconto-container">
-                            <span class="preco" itemprop="price">' . $preco_formatado . '</span>
-                            <meta itemprop="priceCurrency" content="BRL">
+                            <span class="preco">' . $preco_formatado . '</span>
                             <span class="textodesconto">' . esc_html($texto_no_pix) . '</span>
                             <div class="badge-container">
                                 <div class="best-price__Badge-sc-1v0eo34-3 hWoKbG badge">
@@ -57,12 +56,11 @@ class DescontoPixShortcode {
                 $preco_com_desconto_pix = $preco * (1 - ($desconto_pix / 100));
                 $preco_formatado = wc_price($preco_com_desconto_pix);
                 $output .= '
-                <div class="opcao-pagamento pix" itemscope itemtype="https://schema.org/Offer">
+                <div class="opcao-pagamento pix">
                     <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-pix.svg" alt="Ícone de Pix" width="20" height="20">
                     <span class="parcelas">' . esc_html($texto_a_vista) . '</span>
                     <div class="desconto-container">
-                        <span class="preco" itemprop="price">' . $preco_formatado . '</span>
-                        <meta itemprop="priceCurrency" content="BRL">
+                        <span class="preco">' . $preco_formatado . '</span>
                         <span class="textodesconto">' . esc_html($texto_no_pix) . '</span>
                         <div class="badge-container">
                             <div class="best-price__Badge-sc-1v0eo34-3 hWoKbG badge">
@@ -99,11 +97,10 @@ class DescontoPixShortcode {
         $preco_formatado = wc_price($preco_com_desconto_pix);
 
         wp_send_json_success('
-        <div class="opcao-pagamento pix" itemscope itemtype="https://schema.org/Offer">
+        <div class="opcao-pagamento pix">
             <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-pix.svg" alt="Ícone de Pix" width="20" height="20">
             <span class="parcelas">' . esc_html($texto_a_vista) . '</span>
-            <span class="preco" itemprop="price">' . $preco_formatado . '</span>
-            <meta itemprop="priceCurrency" content="BRL">
+            <span class="preco">' . $preco_formatado . '</span>
             <div class="desconto-container">
                 <span class="textodesconto">' . esc_html($texto_no_pix) . '</span>
                 <div class="badge-container">
@@ -150,12 +147,11 @@ class DescontoPixShortcode {
 
         // Aqui você pode adicionar o HTML personalizado para o loop
         $output .= '
-        <div class="opcao-pagamento pix" itemscope itemtype="https://schema.org/Offer">
+        <div class="opcao-pagamento pix">
             <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-pix.svg" alt="Ícone de Pix" width="20" height="20">
             <span class="parcelas">' . esc_html($texto_a_vista) . '</span>
             <div class="desconto-container">
-                <span class="preco" itemprop="price">' . $preco_formatado . '</span>
-                <meta itemprop="priceCurrency" content="BRL">
+                <span class="preco">' . $preco_formatado . '</span>
                 <span class="textodesconto">' . esc_html($texto_no_pix) . '</span>
                 <div class="badge-container">
                     <div class="best-price__Badge-sc-1v0eo34-3 hWoKbG badge">
