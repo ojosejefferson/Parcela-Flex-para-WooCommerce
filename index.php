@@ -13,13 +13,20 @@
  * Tags: Dividi, mostrar parcelas, parcelamento, pagamento à vista, WooCommerce, Pix, boleto bancário, cartão de crédito, descontos, produtos variáveis, e-commerce, Brasil
  */
 
+// Definição da constante ABSPATH
 if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly.
+    define('ABSPATH', dirname(__FILE__) . '/');
 }
 
-if (!function_exists('get_plugins')) {
-    require_once ABSPATH . 'wp-admin/includes/plugin.php';
-}
+// Importações necessárias
+require_once ABSPATH . 'wp-admin/includes/plugin.php';
+require_once ABSPATH . 'wp-includes/pluggable.php';
+require_once ABSPATH . 'wp-includes/plugin.php';
+require_once ABSPATH . 'wp-includes/functions.php';
+require_once ABSPATH . 'wp-includes/option.php';
+require_once ABSPATH . 'wp-includes/pluggable.php';
+require_once ABSPATH . 'wp-includes/pluggable.php';
+require_once ABSPATH . 'wp-includes/pluggable.php';
 
 add_action('woocommerce_loaded', function () {
     if (class_exists('Automattic\WooCommerce\Utilities\FeaturesUtil') && method_exists('Automattic\WooCommerce\Utilities\FeaturesUtil', 'declare_compatibility')) {
@@ -46,6 +53,8 @@ function parcelas_flex_parcelamento_register_settings()
     register_setting('parcelas-flex-parcelamento-settings-group', 'desconto_boleto');
     register_setting('parcelas-flex-parcelamento-settings-group', 'exibir_juros_porcentagem');
     register_setting('parcelas-flex-parcelamento-settings-group', 'valor_minimo_parcela');
+    register_setting('parcelas-flex-parcelamento-settings-group', 'desconto_gateway');
+    register_setting('parcelas-flex-parcelamento-settings-group', 'taxa_juros_personalizada');
     
     for ($i = 1; $i <= 12; $i++) {
         register_setting('parcelas-flex-parcelamento-settings-group', "parcelamento_juros_$i");
@@ -84,10 +93,6 @@ require_once plugin_dir_path(__FILE__) . 'includes/shortcodes/tabela-parcelas.ph
 require_once plugin_dir_path(__FILE__) . 'includes/shortcodes/economize.php';
 require_once plugin_dir_path(__FILE__) . 'includes/shortcodes/melhor-parcela.php';
 
-
-
-
-
 function parcelas_flex_parcelamento_enqueue_scripts()
 {
     if (is_product()) {
@@ -113,4 +118,61 @@ function add_custom_style()
     );
 }
 add_action('wp_enqueue_scripts', 'add_custom_style');
+
+// Adiciona campo de desconto personalizado no painel de produto
+function parcelas_flex_add_custom_discount_field() {
+    global $post;
+    $desconto_personalizado = get_post_meta($post->ID, '_desconto_personalizado', true);
+    echo '<div class="options_group">';
+    woocommerce_wp_text_input(
+        array(
+            'id' => '_desconto_personalizado',
+            'label' => 'Desconto Personalizado (%)',
+            'description' => 'Desconto específico para este produto no Pix',
+            'value' => $desconto_personalizado,
+            'type' => 'number',
+            'custom_attributes' => array(
+                'step' => '0.01',
+                'min' => '0',
+                'max' => '100'
+            )
+        )
+    );
+    echo '</div>';
+}
+add_action('woocommerce_product_options_general_product_data', 'parcelas_flex_add_custom_discount_field');
+
+// Salva o valor do desconto personalizado
+function parcelas_flex_save_custom_discount_field($post_id) {
+    $desconto_personalizado = isset($_POST['_desconto_personalizado']) ? sanitize_text_field($_POST['_desconto_personalizado']) : '';
+    update_post_meta($post_id, '_desconto_personalizado', $desconto_personalizado);
+}
+add_action('woocommerce_process_product_meta', 'parcelas_flex_save_custom_discount_field');
+
+// Adiciona botão de compartilhamento para o WhatsApp
+function parcelas_flex_add_whatsapp_share_button() {
+    echo '<button id="share-whatsapp" class="button">Compartilhar no WhatsApp</button>';
+}
+add_action('woocommerce_single_product_summary', 'parcelas_flex_add_whatsapp_share_button', 20);
+
+// Adiciona informações de desconto e parcelamento na página do carrinho
+function parcelas_flex_show_cart_discount_info() {
+    $cart = WC()->cart;
+    $total_produtos = (float) $cart->get_cart_contents_total();
+    $frete = (float) $cart->get_shipping_total();
+    $desconto_pix = floatval(get_option('desconto_pix', 0));
+    $preco_com_desconto_pix = $total_produtos * (1 - ($desconto_pix / 100));
+    $preco_com_desconto_pix += $frete;
+    $preco_formatado = wc_price($preco_com_desconto_pix);
+    $total_carrinho = (float) $cart->get_total('edit');
+    $economia = $total_carrinho - $preco_com_desconto_pix;
+
+    echo '<div class="parcelas-flex-cart-info">';
+    echo '<h3>Informações de Pagamento</h3>';
+    echo '<p>Valor em Pix: ' . $preco_formatado . '</p>';
+    echo '<p>Economize: ' . wc_price($economia) . '</p>';
+    echo '<p>Parcelamento disponível em até 12x.</p>';
+    echo '</div>';
+}
+add_action('woocommerce_cart_totals_after_order_total', 'parcelas_flex_show_cart_discount_info');
 
