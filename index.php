@@ -206,5 +206,23 @@ add_action('wp_ajax_nopriv_parcelas_flex_update_pix_value', 'parcelas_flex_updat
 add_action('woocommerce_proceed_to_checkout', 'parcelas_flex_show_cart_discount_info');
 add_action('woocommerce_review_order_before_payment', 'parcelas_flex_show_cart_discount_info');
 
+// Adiciona o valor do Pix na resposta do update_order_review
+add_filter('woocommerce_update_order_review_fragments', 'parcelas_flex_add_pix_to_fragments');
+function parcelas_flex_add_pix_to_fragments($fragments) {
+    $cart = WC()->cart;
+    if (!$cart) {
+        return $fragments;
+    }
+
+    $total = $cart->get_total('edit');
+    $desconto_pix = get_option('parcelas_flex_desconto_pix', 0);
+    $valor_pix = $total - ($total * ($desconto_pix / 100));
+    $valor_pix_formatado = wc_price($valor_pix);
+
+    $fragments['.parcelas-flex-cart-info p:first'] = '<p>Valor em Pix: ' . $valor_pix_formatado . '</p>';
+    
+    return $fragments;
+}
+
 
 
