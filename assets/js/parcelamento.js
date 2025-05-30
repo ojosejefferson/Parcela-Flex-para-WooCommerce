@@ -1,58 +1,59 @@
 jQuery(document).ready(function ($) {
+    // Cache dos elementos DOM frequentemente acessados
+    const $form = $('form.variations_form');
+    const $priceElement = $('.single_variation_wrap .woocommerce-variation-price .woocommerce-Price-amount.amount');
+    const containers = {
+        pix: '#desconto-pix-container',
+        boleto: '#desconto-boleto-container',
+        melhor_parcela: '#melhor-parcelas_container',
+        tabela_parcelamento: '#tabela-parcelamento-container',
+        economize: '#economize-container'
+    };
+
+    // Cache das ações AJAX
+    const actions = {
+        pix: 'buscar_desconto_pix',
+        boleto: 'buscar_desconto_boleto',
+        melhor_parcela: 'buscar_melhor_parcela',
+        tabela_parcelamento: 'buscar_tabela_parcelamento',
+        economize: 'buscar_economize'
+    };
+
+    // Debounce para evitar múltiplas chamadas em sequência
+    let updateTimeout;
+    function debounceUpdate(callback, delay = 300) {
+        clearTimeout(updateTimeout);
+        updateTimeout = setTimeout(callback, delay);
+    }
+
     // Função genérica para atualizar o desconto e a melhor parcela
     function atualizarInformacoes(tipo, preco) {
         if (!preco) return;
-
-        var action = '';
-        var container = '';
-
-        switch (tipo) {
-            case 'pix':
-                action = 'buscar_desconto_pix';
-                container = '#desconto-pix-container';
-                break;
-            case 'boleto':
-                action = 'buscar_desconto_boleto';
-                container = '#desconto-boleto-container';
-                break;
-            case 'melhor_parcela':
-                action = 'buscar_melhor_parcela';
-                container = '#melhor-parcelas_container';
-                break;
-            case 'tabela_parcelamento':
-                action = 'buscar_tabela_parcelamento';
-                container = '#tabela-parcelamento-container';
-                break;
-            case 'economize':
-                action = 'buscar_economize';
-                container = '#economize-container';
-                break;
-        }
 
         $.ajax({
             url: parcelaFlexDeParcelamento.ajax_url,
             type: 'POST',
             data: {
-                action: action,
+                action: actions[tipo],
                 preco: preco,
                 nonce: parcelaFlexDeParcelamento.nonce
             },
             success: function (response) {
                 if (response.success) {
-                    $(container).empty().html(response.data);
+                    $(containers[tipo]).empty().html(response.data);
                 } else {
-                    $(container).html('Não foi possível obter as informações para ' + tipo + '.');
+                    $(containers[tipo]).html('Não foi possível obter as informações para ' + tipo + '.');
                 }
             },
             error: function (xhr, status, error) {
-                $(container).html('Erro ao buscar as informações para ' + tipo + ': ' + error);
+                $(containers[tipo]).html('Erro ao buscar as informações para ' + tipo + ': ' + error);
             }
         });
     }
 
     // Função para obter o preço do produto ou variação
     function obterPrecoInicial() {
-        var precoBaseText = $('.single_variation_wrap .woocommerce-variation-price .woocommerce-Price-amount.amount').text();
+        const precoBaseText = $priceElement.text();
         if (precoBaseText) {
             return precoBaseText.replace(/[^0-9,.-]/g, '').replace(',', '.');
         }
@@ -61,41 +62,57 @@ jQuery(document).ready(function ($) {
 
     // Atualiza todas as informações com o preço inicial do produto ou variação
     function atualizarInformacoesVariacao(preco) {
-        atualizarInformacoes('pix', preco);
-        atualizarInformacoes('boleto', preco);
-        atualizarInformacoes('melhor_parcela', preco);
-        atualizarInformacoes('tabela_parcelamento', preco);
-        atualizarInformacoes('economize', preco);
+        if (!preco) return;
+
+        // Atualiza todas as informações em paralelo
+        const promises = Object.keys(actions).map(tipo => {
+            return new Promise((resolve) => {
+                atualizarInformacoes(tipo, preco);
+                resolve();
+            });
+        });
+
+        Promise.all(promises).catch(error => {
+            console.error('Erro ao atualizar informações:', error);
+        });
     }
 
-    // Atualiza as informações quando uma variação é encontrada
-    $('form.variations_form').on('show_variation', function (event, variation) {
-        if (variation.display_price) {
-            atualizarInformacoesVariacao(variation.display_price);
-        }
-    });
+    // Eventos para produtos variáveis
+    if ($form.length) {
+        $form.on('show_variation', function (event, variation) {
+            if (variation.display_price) {
+                debounceUpdate(() => {
+                    atualizarInformacoesVariacao(variation.display_price);
+                });
+            }
+        });
 
-    // Atualiza as informações quando os dados da variação são redefinidos
-    $('form.variations_form').on('hide_variation', function () {
-        var precoBase = obterPrecoInicial();
-        if (precoBase) {
-            atualizarInformacoesVariacao(precoBase);
-        }
-    });
+        $form.on('hide_variation', function () {
+            debounceUpdate(() => {
+                const precoBase = obterPrecoInicial();
+                if (precoBase) {
+                    atualizarInformacoesVariacao(precoBase);
+                }
+            });
+        });
 
-    // Atualiza as informações quando o preço é alterado
-    $('form.variations_form').on('woocommerce_variation_has_changed', function () {
-        var precoBase = obterPrecoInicial();
-        if (precoBase) {
-            atualizarInformacoesVariacao(precoBase);
-        }
-    });
+        $form.on('woocommerce_variation_has_changed', function () {
+            debounceUpdate(() => {
+                const precoBase = obterPrecoInicial();
+                if (precoBase) {
+                    atualizarInformacoesVariacao(precoBase);
+                }
+            });
+        });
+    }
 
     // Atualiza as informações ao carregar a página
     $(window).on('load', function () {
-        var precoInicial = obterPrecoInicial();
-        if (precoInicial) {
-            atualizarInformacoesVariacao(precoInicial);
-        }
+        debounceUpdate(() => {
+            const precoInicial = obterPrecoInicial();
+            if (precoInicial) {
+                atualizarInformacoesVariacao(precoInicial);
+            }
+        });
     });
 });
