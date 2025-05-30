@@ -164,16 +164,45 @@ function parcelas_flex_show_cart_discount_info() {
     $preco_com_desconto_pix = $total_produtos * (1 - ($desconto_pix / 100));
     $preco_com_desconto_pix += $frete;
     $preco_formatado = wc_price($preco_com_desconto_pix);
-    $total_carrinho = (float) $cart->get_total('edit');
-    $economia = $total_carrinho - $preco_com_desconto_pix;
 
     echo '<div class="parcelas-flex-cart-info">';
-    echo '<h3>Informações de Pagamento</h3>';
     echo '<p>Valor em Pix: ' . $preco_formatado . '</p>';
-    echo '<p>Economize: ' . wc_price($economia) . '</p>';
     echo '<p>Parcelamento disponível em até 12x.</p>';
     echo '</div>';
 }
+
+// Adiciona o script para atualização dinâmica no checkout
+function parcelas_flex_enqueue_checkout_scripts() {
+    if (is_checkout()) {
+        wp_enqueue_script('parcelas-flex-checkout', plugin_dir_url(__FILE__) . 'assets/js/checkout.js', array('jquery'), null, true);
+        wp_localize_script('parcelas-flex-checkout', 'parcelasFlexCheckout', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('parcelas_flex_checkout_nonce')
+        ));
+    }
+}
+add_action('wp_enqueue_scripts', 'parcelas_flex_enqueue_checkout_scripts');
+
+// Função para atualizar o valor do Pix via AJAX
+function parcelas_flex_update_pix_value() {
+    check_ajax_referer('parcelas_flex_checkout_nonce', 'nonce');
+    
+    $cart = WC()->cart;
+    $total_produtos = (float) $cart->get_cart_contents_total();
+    $frete = (float) $cart->get_shipping_total();
+    $desconto_pix = floatval(get_option('desconto_pix', 0));
+    $preco_com_desconto_pix = $total_produtos * (1 - ($desconto_pix / 100));
+    $preco_com_desconto_pix += $frete;
+    $preco_formatado = wc_price($preco_com_desconto_pix);
+    
+    wp_send_json_success(array(
+        'pix_value' => $preco_formatado
+    ));
+}
+add_action('wp_ajax_parcelas_flex_update_pix_value', 'parcelas_flex_update_pix_value');
+add_action('wp_ajax_nopriv_parcelas_flex_update_pix_value', 'parcelas_flex_update_pix_value');
+
+// Hooks para exibir o valor do Pix
 add_action('woocommerce_proceed_to_checkout', 'parcelas_flex_show_cart_discount_info');
 add_action('woocommerce_review_order_before_payment', 'parcelas_flex_show_cart_discount_info');
 
