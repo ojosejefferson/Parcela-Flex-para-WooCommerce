@@ -217,3 +217,43 @@
   }
 }
 
+/* Estilos para o desconto do Pix nos loops */
+.desconto-pix-loop-simples {
+    color: #00a650;
+    margin-top: 4px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.desconto-pix-loop-simples .preco-pix {
+    font-weight: 600;
+}
+
+.desconto-pix-loop-simples .texto-pix {
+    font-size: 0.95rem;
+}
+
+.badge-pix {
+    background: #d1fae5;
+    color: #00a650;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* Media query para dispositivos móveis */
+@media (max-width: 768px) {
+    .desconto-pix-loop-simples {
+        font-size: 0.9rem;
+    }
+    
+    .badge-pix {
+        font-size: 11px;
+        padding: 1px 4px;
+    }
+}
+
