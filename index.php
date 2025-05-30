@@ -208,15 +208,26 @@ function parcelas_flex_update_pix_value() {
     check_ajax_referer('parcelas_flex_checkout_nonce', 'nonce');
     
     $cart = WC()->cart;
+    if (!$cart) {
+        wp_send_json_error('Carrinho não encontrado');
+        wp_die();
+    }
+
     $total_produtos = (float) $cart->get_cart_contents_total();
     $frete = (float) $cart->get_shipping_total();
     $desconto_pix = floatval(get_option('desconto_pix', 0));
+    
+    // Calcula o desconto apenas sobre o valor dos produtos
     $preco_com_desconto_pix = $total_produtos * (1 - ($desconto_pix / 100));
-    $preco_com_desconto_pix += $frete;
-    $preco_formatado = wc_price($preco_com_desconto_pix);
+    
+    // Adiciona o frete ao valor com desconto
+    $preco_final = $preco_com_desconto_pix + $frete;
     
     wp_send_json_success(array(
-        'pix_value' => $preco_formatado
+        'cart_total' => $total_produtos,
+        'shipping_total' => $frete,
+        'desconto_pix' => $desconto_pix,
+        'pix_value' => wc_price($preco_final)
     ));
 }
 add_action('wp_ajax_parcelas_flex_update_pix_value', 'parcelas_flex_update_pix_value');
