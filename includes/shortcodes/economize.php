@@ -14,23 +14,76 @@ class EconomizeShortcode {
 
         $output = "<div id='economize-container'>";
         $desconto_pix = floatval(get_option('desconto_pix', 0));
+        $preco = 0;
+        $produto_disponivel = false;
 
-        // Obter o preço de venda atual para produtos simples ou variáveis
-        $preco_venda = $product->is_type('variable') ? 
-            floatval($product->get_variation_price('min', true)) : 
-            floatval($product->get_price());
+        // Verifica o tipo do produto
+        switch ($product->get_type()) {
+            case 'variable':
+                // Produto variável
+                $variacoes = $product->get_available_variations();
+                $preco_minimo = PHP_FLOAT_MAX;
 
-        // Calcular a economia no Pix com base no preço de venda atual
-        $economia_pix = $preco_venda * ($desconto_pix / 100);
+                foreach ($variacoes as $variacao) {
+                    if ($variacao['is_purchasable'] && $variacao['is_in_stock']) {
+                        $produto_disponivel = true;
+                        $preco_variacao = floatval($variacao['display_price']);
+                        if ($preco_variacao < $preco_minimo) {
+                            $preco_minimo = $preco_variacao;
+                        }
+                    }
+                }
 
-        if ($economia_pix > 0) {
+                if ($produto_disponivel) {
+                    $preco = $preco_minimo;
+                }
+                break;
+
+            case 'grouped':
+                // Produto agrupado
+                $children = $product->get_children();
+                $preco_minimo = PHP_FLOAT_MAX;
+
+                foreach ($children as $child_id) {
+                    $child = wc_get_product($child_id);
+                    if ($child && $child->is_purchasable() && $child->is_in_stock()) {
+                        $produto_disponivel = true;
+                        $preco_filho = floatval($child->get_price());
+                        if ($preco_filho < $preco_minimo) {
+                            $preco_minimo = $preco_filho;
+                        }
+                    }
+                }
+
+                if ($produto_disponivel) {
+                    $preco = $preco_minimo;
+                }
+                break;
+
+            case 'external':
+                // Produto externo
+                if ($product->is_purchasable()) {
+                    $produto_disponivel = true;
+                    $preco = floatval($product->get_price());
+                }
+                break;
+
+            default:
+                // Produtos simples, virtuais, baixáveis
+                if ($product->is_purchasable() && $product->is_in_stock()) {
+                    $produto_disponivel = true;
+                    $preco = floatval($product->get_price());
+                }
+                break;
+        }
+
+        // Verifica se o produto está disponível e tem preço válido
+        if ($produto_disponivel && $preco > 0) {
+            $economia_pix = $preco * ($desconto_pix / 100);
             $output .= '<div class="economize-container">
-            <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-descont2.svg" alt="Ícone de boleto" width="20" height="20">
-            <span class="economize-text">'. esc_html($texto_economize) . ' ' . wc_price($economia_pix) . '
-            </span>
-            <span class="economize-amount"><?php echo $amount_saved; ?></span>
-        </div>
-        ';
+                <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-descont2.svg" alt="Ícone de boleto" width="20" height="20">
+                <span class="economize-text">'. esc_html($texto_economize) . ' ' . wc_price($economia_pix) . '</span>
+            </div>';
         }
 
         $output .= "</div>";

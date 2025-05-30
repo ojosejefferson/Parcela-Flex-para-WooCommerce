@@ -7,51 +7,74 @@ class DescontoPixShortcode {
         $product = wc_get_product(get_the_ID());
 
         // Se temos um produto válido
-        if ($product && ($product instanceof WC_Product_Variable || $product instanceof WC_Product)) {
+        if ($product && ($product instanceof WC_Product)) {
             // Prepara o HTML para resposta
             $output = "<div id='desconto-pix-container'>";
+            $preco = 0;
+            $produto_disponivel = false;
 
-            // Se o produto for variável, tenta encontrar o preço padrão
-            if ($product instanceof WC_Product_Variable) {
-                $variacoes = $product->get_available_variations();
-                $preco_minimo = null;
+            // Verifica o tipo do produto
+            switch ($product->get_type()) {
+                case 'variable':
+                    // Produto variável
+                    $variacoes = $product->get_available_variations();
+                    $preco_minimo = PHP_FLOAT_MAX;
 
-                foreach ($variacoes as $variacao) {
-                    $variacao_obj = wc_get_product($variacao['variation_id']);
-                    $preco_variacao = floatval($variacao_obj->get_price());
-
-                    if (is_null($preco_minimo) || $preco_variacao < $preco_minimo) {
-                        $preco_minimo = $preco_variacao;
+                    foreach ($variacoes as $variacao) {
+                        if ($variacao['is_purchasable'] && $variacao['is_in_stock']) {
+                            $produto_disponivel = true;
+                            $preco_variacao = floatval($variacao['display_price']);
+                            if ($preco_variacao < $preco_minimo) {
+                                $preco_minimo = $preco_variacao;
+                            }
+                        }
                     }
-                }
 
-                if (!is_null($preco_minimo)) {
-                    $desconto_pix = floatval(get_option('desconto_pix', 0));
-                    $preco_com_desconto_pix = $preco_minimo * (1 - ($desconto_pix / 100));
-                    $preco_formatado = wc_price($preco_com_desconto_pix);
-                    $output .= '
-                    <div class="opcao-pagamento pix">
-                        <img src="' . plugin_dir_url(__FILE__) . '../src/imagem/icon-pix.svg" alt="Ícone de Pix" width="20" height="20">
-                        <span class="parcelas">' . esc_html($texto_a_vista) . '</span>
-                        <div class="desconto-container">
-                            <span class="preco">' . $preco_formatado . '</span>
-                            <span class="textodesconto">' . esc_html($texto_no_pix) . '</span>
-                            <div class="badge-container">
-                                <div class="best-price__Badge-sc-1v0eo34-3 hWoKbG badge">
-                                    <!-- SVG code -->
-                                    -' . $desconto_pix . '%
-                                </div>
-                            </div>
-                        </div>
-                    </div>';
-                    
-                    
-                } else {
-                    $output .= "<p>Selecione uma opção de produto para ver o desconto do Pix.</p>";
-                }
-            } else {
-                // Se o produto for simples, calcula o desconto
-                $preco = floatval($product->get_price());
+                    if ($produto_disponivel) {
+                        $preco = $preco_minimo;
+                    }
+                    break;
+
+                case 'grouped':
+                    // Produto agrupado
+                    $children = $product->get_children();
+                    $preco_minimo = PHP_FLOAT_MAX;
+
+                    foreach ($children as $child_id) {
+                        $child = wc_get_product($child_id);
+                        if ($child && $child->is_purchasable() && $child->is_in_stock()) {
+                            $produto_disponivel = true;
+                            $preco_filho = floatval($child->get_price());
+                            if ($preco_filho < $preco_minimo) {
+                                $preco_minimo = $preco_filho;
+                            }
+                        }
+                    }
+
+                    if ($produto_disponivel) {
+                        $preco = $preco_minimo;
+                    }
+                    break;
+
+                case 'external':
+                    // Produto externo
+                    if ($product->is_purchasable()) {
+                        $produto_disponivel = true;
+                        $preco = floatval($product->get_price());
+                    }
+                    break;
+
+                default:
+                    // Produtos simples, virtuais, baixáveis
+                    if ($product->is_purchasable() && $product->is_in_stock()) {
+                        $produto_disponivel = true;
+                        $preco = floatval($product->get_price());
+                    }
+                    break;
+            }
+
+            // Verifica se o produto está disponível e tem preço válido
+            if ($produto_disponivel && $preco > 0) {
                 $desconto_pix = floatval(get_option('desconto_pix', 0));
                 $preco_com_desconto_pix = $preco * (1 - ($desconto_pix / 100));
                 $preco_formatado = wc_price($preco_com_desconto_pix);
@@ -64,20 +87,18 @@ class DescontoPixShortcode {
                         <span class="textodesconto">' . esc_html($texto_no_pix) . '</span>
                         <div class="badge-container">
                             <div class="best-price__Badge-sc-1v0eo34-3 hWoKbG badge">
-                                <!-- SVG code -->
                                 -' . $desconto_pix . '%
                             </div>
                         </div>
                     </div>
                 </div>';
+            } else {
+                $output .= "<p>Selecione uma opção de produto para ver o desconto do Pix.</p>";
             }
 
             $output .= "</div>";
-
-            // Retorna o HTML que será substituído pelo shortcode
             return $output;
         } else {
-            // Se não estiver na página do produto ou o produto não for válido, retorna uma mensagem de erro
             return '<p>Desconto do Pix disponível apenas na página de produtos.</p>';
         }
     }

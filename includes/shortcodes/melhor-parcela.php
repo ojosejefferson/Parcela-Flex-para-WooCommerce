@@ -8,36 +8,67 @@ class MelhorParcelasShortcode {
             return '<div id="tabela-parcelamento-container">Produto não encontrado.</div>';
         }
 
-        $preco = 0; // Inicializa o preço como zero
+        $preco = 0;
         $produto_disponivel = false;
 
-        // Verifica se o produto é variável
-        if ($product->is_type('variable')) {
-            // Obtém todas as variações do produto
-            $variacoes = $product->get_available_variations();
+        // Verifica o tipo do produto
+        switch ($product->get_type()) {
+            case 'variable':
+                // Produto variável
+                $variacoes = $product->get_available_variations();
+                $preco_minimo = PHP_FLOAT_MAX;
 
-            // Inicializa o preço mínimo como o maior valor possível
-            $preco_minimo = PHP_FLOAT_MAX;
-
-            // Itera sobre as variações para encontrar o preço mínimo
-            foreach ($variacoes as $variacao) {
-                if ($variacao['is_purchasable'] && $variacao['is_in_stock']) {
-                    $produto_disponivel = true;
-                    $preco_variacao = floatval($variacao['display_price']);
-                    if ($preco_variacao < $preco_minimo) {
-                        $preco_minimo = $preco_variacao;
+                foreach ($variacoes as $variacao) {
+                    if ($variacao['is_purchasable'] && $variacao['is_in_stock']) {
+                        $produto_disponivel = true;
+                        $preco_variacao = floatval($variacao['display_price']);
+                        if ($preco_variacao < $preco_minimo) {
+                            $preco_minimo = $preco_variacao;
+                        }
                     }
                 }
-            }
 
-            if ($produto_disponivel) {
-                $preco = $preco_minimo;
-            }
-        } else {
-            if ($product->is_purchasable() && $product->is_in_stock()) {
-                $produto_disponivel = true;
-                $preco = floatval($product->get_price());
-            }
+                if ($produto_disponivel) {
+                    $preco = $preco_minimo;
+                }
+                break;
+
+            case 'grouped':
+                // Produto agrupado
+                $children = $product->get_children();
+                $preco_minimo = PHP_FLOAT_MAX;
+
+                foreach ($children as $child_id) {
+                    $child = wc_get_product($child_id);
+                    if ($child && $child->is_purchasable() && $child->is_in_stock()) {
+                        $produto_disponivel = true;
+                        $preco_filho = floatval($child->get_price());
+                        if ($preco_filho < $preco_minimo) {
+                            $preco_minimo = $preco_filho;
+                        }
+                    }
+                }
+
+                if ($produto_disponivel) {
+                    $preco = $preco_minimo;
+                }
+                break;
+
+            case 'external':
+                // Produto externo
+                if ($product->is_purchasable()) {
+                    $produto_disponivel = true;
+                    $preco = floatval($product->get_price());
+                }
+                break;
+
+            default:
+                // Produtos simples, virtuais, baixáveis
+                if ($product->is_purchasable() && $product->is_in_stock()) {
+                    $produto_disponivel = true;
+                    $preco = floatval($product->get_price());
+                }
+                break;
         }
 
         // Verifica se o produto está disponível e tem preço válido
@@ -51,13 +82,11 @@ class MelhorParcelasShortcode {
 
         // Calcula as parcelas normalmente
         for ($i = 1; $i <= 12; $i++) {
-            $juros = get_option("parcelamento_juros_$i", ''); // Obtém a taxa de juros como string
+            $juros = get_option("parcelamento_juros_$i", '');
 
-            // Verifica se o campo de juros foi preenchido
             if ($juros !== '' && is_numeric($juros) && floatval($juros) >= 0) {
                 $juros = floatval($juros);
 
-                // Se a taxa de juros for zero, atualiza a melhor parcela
                 if ($juros == 0) {
                     $valor_parcela = $preco / $i;
                     $melhor_parcela = $i;
@@ -76,7 +105,7 @@ class MelhorParcelasShortcode {
         </div>';            
         }
 
-        return ''; // Se não houver parcela sem juros, retorna vazio
+        return '';
     }
 
     public function buscar_melhor_parcelas_sem_juros() {

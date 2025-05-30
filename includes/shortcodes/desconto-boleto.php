@@ -17,21 +17,78 @@ class DescontoBoletoShortcode {
         }
 
         $output = "<div id='desconto-boleto-container'>";
+        $preco = 0;
+        $produto_disponivel = false;
 
-        // Verifica se o produto é variável ou simples
-        if ($product->is_type('variable')) {
-            $preco = floatval($product->get_variation_price('min', true)); // Preço mínimo da variação
-        } else {
-            $preco = floatval($product->get_price()); // Preço atual do produto
+        // Verifica o tipo do produto
+        switch ($product->get_type()) {
+            case 'variable':
+                // Produto variável
+                $variacoes = $product->get_available_variations();
+                $preco_minimo = PHP_FLOAT_MAX;
+
+                foreach ($variacoes as $variacao) {
+                    if ($variacao['is_purchasable'] && $variacao['is_in_stock']) {
+                        $produto_disponivel = true;
+                        $preco_variacao = floatval($variacao['display_price']);
+                        if ($preco_variacao < $preco_minimo) {
+                            $preco_minimo = $preco_variacao;
+                        }
+                    }
+                }
+
+                if ($produto_disponivel) {
+                    $preco = $preco_minimo;
+                }
+                break;
+
+            case 'grouped':
+                // Produto agrupado
+                $children = $product->get_children();
+                $preco_minimo = PHP_FLOAT_MAX;
+
+                foreach ($children as $child_id) {
+                    $child = wc_get_product($child_id);
+                    if ($child && $child->is_purchasable() && $child->is_in_stock()) {
+                        $produto_disponivel = true;
+                        $preco_filho = floatval($child->get_price());
+                        if ($preco_filho < $preco_minimo) {
+                            $preco_minimo = $preco_filho;
+                        }
+                    }
+                }
+
+                if ($produto_disponivel) {
+                    $preco = $preco_minimo;
+                }
+                break;
+
+            case 'external':
+                // Produto externo
+                if ($product->is_purchasable()) {
+                    $produto_disponivel = true;
+                    $preco = floatval($product->get_price());
+                }
+                break;
+
+            default:
+                // Produtos simples, virtuais, baixáveis
+                if ($product->is_purchasable() && $product->is_in_stock()) {
+                    $produto_disponivel = true;
+                    $preco = floatval($product->get_price());
+                }
+                break;
         }
 
-        $desconto_boleto = floatval(get_option('desconto_boleto', 0));
-        $preco_com_desconto_boleto = $preco * (1 - ($desconto_boleto / 100));
-        $preco_formatado = wc_price($preco_com_desconto_boleto);
+        // Verifica se o produto está disponível e tem preço válido
+        if ($produto_disponivel && $preco > 0) {
+            $desconto_boleto = floatval(get_option('desconto_boleto', 0));
+            $preco_com_desconto_boleto = $preco * (1 - ($desconto_boleto / 100));
+            $preco_formatado = wc_price($preco_com_desconto_boleto);
+            $output .= $this->parcelas_flex_gerar_html_desconto_boleto($preco_formatado, $desconto_boleto);
+        }
 
-        $output .= $this->parcelas_flex_gerar_html_desconto_boleto($preco_formatado, $desconto_boleto);
         $output .= "</div>";
-
         return $output;
     }
 
