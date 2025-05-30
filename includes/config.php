@@ -6,147 +6,293 @@ function parcelas_flex_parcelamento_settings_page()
     $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'configuracao';
 ?>
 
+<div class="wrap woocommerce">
+    <h1 class="wp-heading-inline">Configurações de Parcelamento</h1>
+    <hr class="wp-header-end">
 
-<div class="wrap">
-    <h2>Configurações de Parcelamento</h2>
+    <div class="notice notice-info inline">
+        <p>Configure as opções de parcelamento e descontos para seu e-commerce.</p>
+    </div>
 
-    <form method="post" action="options.php" class="mt-4">
+    <form method="post" action="options.php">
         <?php settings_fields('parcelas-flex-parcelamento-settings-group'); ?>
         <?php do_settings_sections('parcelas-flex-parcelamento-settings-group'); ?>
 
-        <div class="metabox-holder">
-            <div class="postbox">
-                <div class="inside">
-                    <div style="display: flex;">
-                        <div style="flex: 1;">
-                            <!-- Conteúdo da segunda coluna aqui -->
-                            <h3>Configure a Taxa de Juros Por Parcela</h3>
-                            <p>
-                                <strong>Digite 0 </strong>para parcelamento sem juros ou deixe em branco para não mostrar a parcela
-                            </p>
-
-                            <?php for ($i = 1; $i <= 12; $i++) : ?>
-                                <div class="row" style="margin-bottom: 18px;">
-                                    <div class="col">
-                                        <label for="parcelamento_juros_<?php echo $i; ?>">Taxa de Juros para <?php echo $i; ?>x (%)</label>
-                                        <input type="number" class="regular-text form-control mb-2" id="parcelamento_juros_<?php echo $i; ?>" name="parcelamento_juros_<?php echo $i; ?>" value="<?php echo esc_attr(get_option("parcelamento_juros_$i", 0)); ?>" step="0.01" min="0" max="100">
-                                    </div>
+        <div class="wc-settings-panel">
+            <div class="wc-settings-panel__header">
+                <h2>Configurações de Parcelamento</h2>
+            </div>
+            <div class="wc-settings-panel__body">
+                <div class="wc-settings-panel__content">
+                    <div class="wc-settings-panel__row">
+                        <div class="wc-settings-panel__col">
+                            <div class="wc-settings-panel__field">
+                                <h3>Taxa de Juros por Parcela</h3>
+                                <p class="description">Digite 0 para parcelamento sem juros ou deixe em branco para não mostrar a parcela.</p>
+                                
+                                <div class="wc-settings-panel__fields-grid">
+                                    <?php for ($i = 1; $i <= 12; $i++) : ?>
+                                        <div class="wc-settings-panel__field">
+                                            <label for="parcelamento_juros_<?php echo $i; ?>">
+                                                Taxa de Juros para <?php echo $i; ?>x (%)
+                                            </label>
+                                            <input type="number" 
+                                                   class="regular-text" 
+                                                   id="parcelamento_juros_<?php echo $i; ?>" 
+                                                   name="parcelamento_juros_<?php echo $i; ?>" 
+                                                   value="<?php echo esc_attr(get_option("parcelamento_juros_$i", 0)); ?>" 
+                                                   step="0.01" 
+                                                   min="0" 
+                                                   max="100">
+                                        </div>
+                                    <?php endfor; ?>
                                 </div>
-                            <?php endfor; ?>
-                            <p>Informações de Shortcode</p> <a href="https://github.com/ojosejefferson/Parcelas-Flex-For-WooCommerce" target="_blank">ver os shortcodes</a>
+                            </div>
                         </div>
 
-
-                        <div style="flex: 1;">
-                            <h3>Configure o desconto e valor mínimo de parcela</h3>
-                            <p>
-                                <strong>Valor em % Pix e Boleto</strong> Real valor mínimo de parcela
-                            </p>
-
-                            <!-- Conteúdo da primeira coluna aqui -->
-                            <div class="row mb-3" style="margin-bottom: 18px;"> 
-                                <div class="col">
+                        <div class="wc-settings-panel__col">
+                            <div class="wc-settings-panel__field">
+                                <h3>Descontos e Valores Mínimos</h3>
+                                
+                                <div class="wc-settings-panel__field">
                                     <label for="desconto_pix">Desconto Pix (%)</label>
-                                    <input type="number" class="regular-text form-control mb-2" id="desconto_pix" name="desconto_pix" value="<?php echo esc_attr(get_option('desconto_pix')); ?>" step="0.01" min="0" max="100">
+                                    <input type="number" 
+                                           class="regular-text" 
+                                           id="desconto_pix" 
+                                           name="desconto_pix" 
+                                           value="<?php echo esc_attr(get_option('desconto_pix')); ?>" 
+                                           step="0.01" 
+                                           min="0" 
+                                           max="100">
                                 </div>
-                            </div>
 
-                            <div class="row mb-3" style="margin-bottom: 18px;">
-                                <div class="col">
+                                <div class="wc-settings-panel__field">
                                     <label for="desconto_boleto">Desconto Boleto (%)</label>
-                                    <input type="number" class="regular-text form-control mb-2" id="desconto_boleto" name="desconto_boleto" value="<?php echo esc_attr(get_option('desconto_boleto')); ?>" step="0.01" min="0" max="100">
+                                    <input type="number" 
+                                           class="regular-text" 
+                                           id="desconto_boleto" 
+                                           name="desconto_boleto" 
+                                           value="<?php echo esc_attr(get_option('desconto_boleto')); ?>" 
+                                           step="0.01" 
+                                           min="0" 
+                                           max="100">
+                                </div>
+
+                                <div class="wc-settings-panel__field">
+                                    <label for="valor_minimo_parcela">Valor mínimo da parcela (R$)</label>
+                                    <input type="number" 
+                                           class="regular-text" 
+                                           id="valor_minimo_parcela" 
+                                           name="valor_minimo_parcela" 
+                                           value="<?php echo esc_attr(get_option('valor_minimo_parcela')); ?>" 
+                                           step="0.01" 
+                                           min="0">
+                                </div>
+
+                                <div class="wc-settings-panel__field">
+                                    <label class="wc-settings-panel__checkbox">
+                                        <input type="checkbox" 
+                                               id="exibir_juros_porcentagem" 
+                                               name="exibir_juros_porcentagem" 
+                                               value="1" 
+                                               <?php checked(1, get_option('exibir_juros_porcentagem', 0)); ?>>
+                                        Exibir a porcentagem de juros no frontend
+                                    </label>
                                 </div>
                             </div>
+                        </div>
+                    </div>
 
-
-                            <div class="row mb-3" style="margin-bottom: 18px;">
-                                <div class="col">
-                                    <label for="valor_minimo_parcela" >Valor mínimo da parcela (R$)</label>
-                                    <input type="number" class="regular-text form-control mb-2" id="valor_minimo_parcela" name="valor_minimo_parcela" value="<?php echo esc_attr(get_option('valor_minimo_parcela')); ?>" step="0.01" min="0">
-                                </div>
-                            </div>
-
-
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <input type="checkbox" id="exibir_juros_porcentagem" name="exibir_juros_porcentagem" value="1" <?php checked(1, get_option('exibir_juros_porcentagem', 0)); ?>>
-                                    <label for="exibir_juros_porcentagem">Exibir a porcentagem de juros no frontend</label>
-                                </div>
-                                <p></p>
+                    <div class="wc-settings-panel__row">
+                        <div class="wc-settings-panel__col">
+                            <div class="wc-settings-panel__field">
+                                <h3>Textos Personalizados</h3>
+                                
                                 <?php
-                                // Saída de segurança, ação e opção de campos para a página de configurações
                                 settings_fields('parcelas_flex-opcoes-pagamento');
                                 do_settings_sections('parcelas_flex-opcoes-pagamento');
-                                // Campos de entrada para as preferências do usuário
                                 ?>
-                                <table style="text-align: left;">
-                    <tr>
-                        <th scope="row"><label for="parcelas_flex_texto_a_vista">Prefixo 'Pix'</label></th>
-                        <td>
-                            <input name="parcelas_flex_texto_a_vista" type="text" id="parcelas_flex_texto_a_vista" value="<?php echo esc_attr(get_option('parcelas_flex_texto_a_vista', 'à vista')); ?>" class="regular-text">
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><label for="parcelas_flex_texto_no_pix">Sufixo 'Pix'</label></th>
-                        <td>
-                            <input name="parcelas_flex_texto_no_pix" type="text" id="parcelas_flex_texto_no_pix" value="<?php echo esc_attr(get_option('parcelas_flex_texto_no_pix', 'no Pix')); ?>" class="regular-text">
-                        </td>
-                    </tr>
 
-                    <tr>
-                        <th scope="row"><label for="parcelas_flex_texto_a_boleto">Prefixo 'à vista'</label></th>
-                        <td>
-                            <input name="parcelas_flex_texto_a_boleto" type="text" id="parcelas_flex_texto_a_boleto" value="<?php echo esc_attr(get_option('parcelas_flex_texto_a_boleto', 'à vista Boleto')); ?>" class="regular-text">
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><label for="parcelas_flex_texto_no_boleto">Prefixo 'no Boleto'</label></th>
-                        <td>
-                            <input name="parcelas_flex_texto_no_boleto" type="text" id="parcelas_flex_texto_no_boleto" value="<?php echo esc_attr(get_option('parcelas_flex_texto_no_boleto', 'no Boleto')); ?>" class="regular-text">
-                        </td>
-                    </tr>
+                                <div class="wc-settings-panel__fields-grid">
+                                    <div class="wc-settings-panel__field">
+                                        <label for="parcelas_flex_texto_a_vista">Prefixo 'Pix'</label>
+                                        <input type="text" 
+                                               class="regular-text" 
+                                               id="parcelas_flex_texto_a_vista" 
+                                               name="parcelas_flex_texto_a_vista" 
+                                               value="<?php echo esc_attr(get_option('parcelas_flex_texto_a_vista', 'à vista')); ?>">
+                                    </div>
 
-                    <tr>
-                        <th scope="row"><label for="parcelas_flex_texto_economize">Prefixo 'Economize no Pix'</label></th>
-                        <td>
-                            <input name="parcelas_flex_texto_economize" type="text" id="parcelas_flex_texto_economize" value="<?php echo esc_attr(get_option('parcelas_flex_texto_economize', 'Economize no Pix')); ?>" class="regular-text">
-                        </td>
-                    </tr>
+                                    <div class="wc-settings-panel__field">
+                                        <label for="parcelas_flex_texto_no_pix">Sufixo 'Pix'</label>
+                                        <input type="text" 
+                                               class="regular-text" 
+                                               id="parcelas_flex_texto_no_pix" 
+                                               name="parcelas_flex_texto_no_pix" 
+                                               value="<?php echo esc_attr(get_option('parcelas_flex_texto_no_pix', 'no Pix')); ?>">
+                                    </div>
 
-                    <tr>
-                        <th scope="row"><label for="parcelas_flex_texto_melhor_parcela">Prefixo 'sem juros'</label></th>
-                        <td>
-                            <input name="parcelas_flex_texto_melhor_parcela" type="text" id="parcelas_flex_texto_melhor_parcela" value="<?php echo esc_attr(get_option('parcelas_flex_texto_melhor_parcela', 'sem juros')); ?>" class="regular-text">
-                        </td>
-                    </tr>
+                                    <div class="wc-settings-panel__field">
+                                        <label for="parcelas_flex_texto_a_boleto">Prefixo 'à vista'</label>
+                                        <input type="text" 
+                                               class="regular-text" 
+                                               id="parcelas_flex_texto_a_boleto" 
+                                               name="parcelas_flex_texto_a_boleto" 
+                                               value="<?php echo esc_attr(get_option('parcelas_flex_texto_a_boleto', 'à vista Boleto')); ?>">
+                                    </div>
 
-                    <tr>
-                        <th scope="row"><label for="parcelas_flex_texto_melhor_parcelas_cjuros">Prefixo 'com juros'</label></th>
-                        <td>
-                            <input name="parcelas_flex_texto_melhor_parcelas_cjuros" type="text" id="parcelas_flex_texto_melhor_parcelas_cjuros" value="<?php echo esc_attr(get_option('parcelas_flex_texto_melhor_parcelas_cjuros', 'com juros')); ?>" class="regular-text">
-                        </td>
-                    </tr>
-                </table>
+                                    <div class="wc-settings-panel__field">
+                                        <label for="parcelas_flex_texto_no_boleto">Prefixo 'no Boleto'</label>
+                                        <input type="text" 
+                                               class="regular-text" 
+                                               id="parcelas_flex_texto_no_boleto" 
+                                               name="parcelas_flex_texto_no_boleto" 
+                                               value="<?php echo esc_attr(get_option('parcelas_flex_texto_no_boleto', 'no Boleto')); ?>">
+                                    </div>
+
+                                    <div class="wc-settings-panel__field">
+                                        <label for="parcelas_flex_texto_economize">Prefixo 'Economize no Pix'</label>
+                                        <input type="text" 
+                                               class="regular-text" 
+                                               id="parcelas_flex_texto_economize" 
+                                               name="parcelas_flex_texto_economize" 
+                                               value="<?php echo esc_attr(get_option('parcelas_flex_texto_economize', 'Economize no Pix')); ?>">
+                                    </div>
+
+                                    <div class="wc-settings-panel__field">
+                                        <label for="parcelas_flex_texto_melhor_parcela">Prefixo 'sem juros'</label>
+                                        <input type="text" 
+                                               class="regular-text" 
+                                               id="parcelas_flex_texto_melhor_parcela" 
+                                               name="parcelas_flex_texto_melhor_parcela" 
+                                               value="<?php echo esc_attr(get_option('parcelas_flex_texto_melhor_parcela', 'sem juros')); ?>">
+                                    </div>
+
+                                    <div class="wc-settings-panel__field">
+                                        <label for="parcelas_flex_texto_melhor_parcelas_cjuros">Prefixo 'com juros'</label>
+                                        <input type="text" 
+                                               class="regular-text" 
+                                               id="parcelas_flex_texto_melhor_parcelas_cjuros" 
+                                               name="parcelas_flex_texto_melhor_parcelas_cjuros" 
+                                               value="<?php echo esc_attr(get_option('parcelas_flex_texto_melhor_parcelas_cjuros', 'com juros')); ?>">
+                                    </div>
+                                </div>
                             </div>
-                        </div> <!-- fim da coluna 1 -->
-
-                        
+                        </div>
                     </div>
                 </div>
             </div>
+            <div class="wc-settings-panel__footer">
+                <button type="submit" class="button button-primary">Salvar Alterações</button>
+            </div>
         </div>
-
-        <button type="submit" class="button button-primary" style="margin-top: 15px;">Salvar Alterações</button>
-
     </form>
-    
+
+    <div class="wc-settings-panel">
+        <div class="wc-settings-panel__header">
+            <h2>Informações de Shortcode</h2>
+        </div>
+        <div class="wc-settings-panel__body">
+            <div class="wc-settings-panel__content">
+                <p>Para mais informações sobre os shortcodes disponíveis, visite nossa <a href="https://github.com/ojosejefferson/Parcelas-Flex-For-WooCommerce" target="_blank">documentação no GitHub</a>.</p>
+            </div>
+        </div>
+    </div>
 </div>
 
+<style>
+.wc-settings-panel {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    margin-top: 20px;
+}
 
+.wc-settings-panel__header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #ccd0d4;
+}
+
+.wc-settings-panel__header h2 {
+    margin: 0;
+    font-size: 1.3em;
+    font-weight: 600;
+}
+
+.wc-settings-panel__body {
+    padding: 20px;
+}
+
+.wc-settings-panel__content {
+    max-width: 100%;
+}
+
+.wc-settings-panel__row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -10px;
+}
+
+.wc-settings-panel__col {
+    flex: 1;
+    min-width: 300px;
+    padding: 10px;
+}
+
+.wc-settings-panel__field {
+    margin-bottom: 20px;
+}
+
+.wc-settings-panel__field h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+.wc-settings-panel__fields-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.wc-settings-panel__field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.wc-settings-panel__field input[type="text"],
+.wc-settings-panel__field input[type="number"] {
+    width: 100%;
+    max-width: 300px;
+}
+
+.wc-settings-panel__checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.wc-settings-panel__footer {
+    padding: 15px 20px;
+    border-top: 1px solid #ccd0d4;
+    text-align: right;
+}
+
+.description {
+    color: #666;
+    font-style: italic;
+    margin-bottom: 15px;
+}
+
+.notice {
+    margin: 20px 0;
+}
+</style>
 
 <?php
 }
-
 
 function parcelas_flex_registrar_configuracoes()
 {
@@ -170,5 +316,4 @@ function parcelas_flex_registrar_configuracoes()
 }
 
 add_action('admin_init', 'parcelas_flex_registrar_configuracoes');
-
 ?>
