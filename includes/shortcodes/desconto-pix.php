@@ -183,6 +183,11 @@ add_shortcode('desconto_pix_loop', array($desconto_pix_shortcode, 'parcelas_flex
 
 // Função para exibir o shortcode do Pix abaixo do preço
 function mostrar_pix_shortcode_abaixo_do_preco($price_html, $product) {
+    // Garante que só executa no frontend
+    if (is_admin()) {
+        return $price_html;
+    }
+
     // Verifica se estamos na página da loja, categoria, busca ou tag
     if (is_shop() || is_product_category() || is_search() || is_product_tag()) {
         // Obtém o preço do produto
@@ -200,10 +205,9 @@ function mostrar_pix_shortcode_abaixo_do_preco($price_html, $product) {
         $price_html .= '<span class="texto-pix">' . esc_html($texto_no_pix) . ' </span>';
         $price_html .= '<span class="badge" style="background: #d1fae5; color: #00a650; font-size: 12px; font-weight: 600; padding: 2px 6px; border-radius: 4px;">-' . $desconto_pix . '%</span>';
         $price_html .= '</div>';
-        
-        
     }
-    
+
     return $price_html;
 }
 add_filter('woocommerce_get_price_html', 'mostrar_pix_shortcode_abaixo_do_preco', 30, 2);
+
