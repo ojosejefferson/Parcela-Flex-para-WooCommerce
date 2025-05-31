@@ -130,26 +130,29 @@ function parcelas_flex_show_cart_discount_info() {
     $cart = WC()->cart;
     if (!$cart) return;
 
-    // Pega os valores
-    $subtotal_produtos = (float) $cart->get_cart_contents_total(); // apenas produtos
-    $frete = (float) $cart->get_shipping_total(); // frete
-    $cupons = (float) $cart->get_discount_total(); // cupons
-    $desconto_pix_percentual = floatval(get_option('desconto_pix', 0)); // percentual
+    $subtotal = (float) $cart->get_cart_contents_total();
+    $frete = (float) $cart->get_shipping_total();
+    $desconto_cupom = (float) $cart->get_discount_total();
+    $desconto_pix_percentual = floatval(get_option('desconto_pix', 0));
 
-    // Aplica desconto somente sobre o subtotal dos produtos
-    $desconto_pix_valor = $subtotal_produtos * ($desconto_pix_percentual / 100);
+    // Total real do pedido, sem aplicar desconto Pix
+    $total_real = $subtotal + $frete - $desconto_cupom;
+    if ($total_real < 0) $total_real = 0;
 
-    // Valor total simulado (sem alterar WooCommerce)
-    $total_simulado = $subtotal_produtos + $frete - $cupons - $desconto_pix_valor;
-
-    // Previne valor negativo
-    if ($total_simulado < 0) $total_simulado = 0;
+    // Valor que o cliente ganharia de desconto via Pix
+    $valor_desconto_pix = $total_real * ($desconto_pix_percentual / 100);
 
     echo '<tr class="parcelas-flex-cart-info">';
-    echo '<th style="color: #00a650; font-weight: 600;">Total à vista no Pix:</th>';
-    echo '<td style="color: #00a650; font-weight: 600;">' . wc_price($total_simulado) . '</td>';
+    echo '<th style="color: #00a650; font-weight: 600;">Total (sem desconto Pix):</th>';
+    echo '<td>' . wc_price($total_real) . '</td>';
+    echo '</tr>';
+
+    echo '<tr class="parcelas-flex-cart-info">';
+    echo '<th style="color: #00a650; font-weight: 600;">Você economizaria pagando no Pix:</th>';
+    echo '<td style="color: #00a650; font-weight: 600;">- ' . wc_price($valor_desconto_pix) . '</td>';
     echo '</tr>';
 }
+
 
 // Fragmentos AJAX — CARRINHO e CHECKOUT
 function parcelas_flex_add_pix_to_fragments($fragments) {
