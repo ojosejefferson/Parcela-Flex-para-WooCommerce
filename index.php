@@ -119,155 +119,58 @@ function add_custom_style()
 }
 add_action('wp_enqueue_scripts', 'add_custom_style');
 
-// Adiciona campo de desconto personalizado no painel de produto
-function parcelas_flex_add_custom_discount_field() {
-    global $post;
-    $desconto_personalizado = get_post_meta($post->ID, '_desconto_personalizado', true);
-    echo '<div class="options_group">';
-    woocommerce_wp_text_input(
-        array(
-            'id' => '_desconto_personalizado',
-            'label' => 'Desconto Personalizado (%)',
-            'description' => 'Desconto específico para este produto no Pix',
-            'value' => $desconto_personalizado,
-            'type' => 'number',
-            'custom_attributes' => array(
-                'step' => '0.01',
-                'min' => '0',
-                'max' => '100'
-            )
-        )
-    );
-    echo '</div>';
-}
-add_action('woocommerce_product_options_general_product_data', 'parcelas_flex_add_custom_discount_field');
 
-// Salva o valor do desconto personalizado
-function parcelas_flex_save_custom_discount_field($post_id) {
-    $desconto_personalizado = isset($_POST['_desconto_personalizado']) ? sanitize_text_field($_POST['_desconto_personalizado']) : '';
-    update_post_meta($post_id, '_desconto_personalizado', $desconto_personalizado);
-}
-add_action('woocommerce_process_product_meta', 'parcelas_flex_save_custom_discount_field');
 
-// Adiciona botão de compartilhamento para o WhatsApp
-function parcelas_flex_add_whatsapp_share_button() {
-    echo '<button id="share-whatsapp" class="button">Compartilhar no WhatsApp</button>';
-}
-add_action('woocommerce_single_product_summary', 'parcelas_flex_add_whatsapp_share_button', 20);
 
-// Função para exibir o valor do Pix
+
+
+
+//// Exibe valor simulado do Pix corretamente (no carrinho e checkout)
 function parcelas_flex_show_cart_discount_info() {
     $cart = WC()->cart;
     if (!$cart) return;
 
-    $subtotal = (float) $cart->get_subtotal(); // total dos produtos
-    $desconto_cupom = (float) $cart->get_discount_total();
-    $frete = (float) $cart->get_shipping_total();
-    $desconto_pix = floatval(get_option('desconto_pix', 0));
+    // Pega os valores
+    $subtotal_produtos = (float) $cart->get_cart_contents_total(); // apenas produtos
+    $frete = (float) $cart->get_shipping_total(); // frete
+    $cupons = (float) $cart->get_discount_total(); // cupons
+    $desconto_pix_percentual = floatval(get_option('desconto_pix', 0)); // percentual
 
-    $total_produtos = $subtotal - $desconto_cupom;
+    // Aplica desconto somente sobre o subtotal dos produtos
+    $desconto_pix_valor = $subtotal_produtos * ($desconto_pix_percentual / 100);
 
-    $valor_desconto_pix = $total_produtos * ($desconto_pix / 100);
-    $total_pix = $total_produtos - $valor_desconto_pix + $frete;
+    // Valor total simulado (sem alterar WooCommerce)
+    $total_simulado = $subtotal_produtos + $frete - $cupons - $desconto_pix_valor;
+
+    // Previne valor negativo
+    if ($total_simulado < 0) $total_simulado = 0;
 
     echo '<tr class="parcelas-flex-cart-info">';
     echo '<th style="color: #00a650; font-weight: 600;">Total à vista no Pix:</th>';
-    echo '<td style="color: #00a650; font-weight: 600;">' . wc_price($total_pix) . '</td>';
+    echo '<td style="color: #00a650; font-weight: 600;">' . wc_price($total_simulado) . '</td>';
     echo '</tr>';
 }
 
+// Fragmentos AJAX — CARRINHO e CHECKOUT
+function parcelas_flex_add_pix_to_fragments($fragments) {
+    ob_start();
+    parcelas_flex_show_cart_discount_info();
+    $fragments['.parcelas-flex-cart-info'] = ob_get_clean();
+    return $fragments;
+}
 
-// Remove os hooks antigos
+// Remove qualquer hook antigo
 remove_action('woocommerce_proceed_to_checkout', 'parcelas_flex_show_cart_discount_info');
 remove_action('woocommerce_review_order_before_payment', 'parcelas_flex_show_cart_discount_info');
 
-// Adiciona os novos hooks
+// Adiciona onde precisa aparecer
 add_action('woocommerce_cart_totals_after_order_total', 'parcelas_flex_show_cart_discount_info');
 add_action('woocommerce_review_order_after_order_total', 'parcelas_flex_show_cart_discount_info');
 
-// Atualiza a função de fragments para usar o novo formato
-function parcelas_flex_add_pix_to_cart_fragments($fragments) {
-    $cart = WC()->cart;
-    if (!$cart) {
-        return $fragments;
-    }
+// Atualizações dinâmicas
+add_filter('woocommerce_add_to_cart_fragments', 'parcelas_flex_add_pix_to_fragments');
+add_filter('woocommerce_update_order_review_fragments', 'parcelas_flex_add_pix_to_fragments');
 
-    // Obtém o subtotal dos produtos
-    $subtotal = (float) $cart->get_subtotal();
-    
-    // Obtém o valor do frete
-    $frete = (float) $cart->get_shipping_total();
-    
-    // Obtém o valor do desconto do cupom
-    $desconto_cupom = (float) $cart->get_discount_total();
-    
-    // Obtém a porcentagem de desconto do Pix do plugin
-    $desconto_pix = floatval(get_option('desconto_pix', 0));
-    
-    // Calcula o valor total base (subtotal + frete - cupom)
-    $valor_base = $subtotal + $frete - $desconto_cupom;
-    
-    // Aplica o desconto do Pix
-    $desconto_valor = $valor_base * ($desconto_pix / 100);
-    $preco_final = $valor_base - $desconto_valor;
-
-    $fragments['.parcelas-flex-cart-info'] = '<tr class="parcelas-flex-cart-info"><th style="color: #00a650; font-weight: 600;">Total à vista no Pix:</th><td style="color: #00a650; font-weight: 600;">' . wc_price($preco_final) . '</td></tr>';
-    
-    return $fragments;
-}
-
-// Atualiza a função de fragments do checkout
-function parcelas_flex_add_pix_to_fragments($fragments) {
-    $cart = WC()->cart;
-    if (!$cart) {
-        return $fragments;
-    }
-
-    // Obtém o valor total dos produtos (sem frete)
-    $total_produtos = (float) $cart->get_cart_contents_total();
-    
-    // Obtém o valor do frete
-    $frete = (float) $cart->get_shipping_total();
-    
-    // Obtém a porcentagem de desconto do Pix
-    $desconto_pix = floatval(get_option('desconto_pix', 0));
-    
-    // Obtém o valor total do carrinho (incluindo descontos do gateway e cupom)
-    $total_carrinho = (float) $cart->get_total('edit');
-    
-    // Verifica se o método de pagamento é Pix
-    $is_pix = isset($_POST['payment_method']) && $_POST['payment_method'] === 'pix';
-    
-    // Se o método de pagamento for Pix, usa o valor total do carrinho
-    if ($is_pix) {
-        $preco_final = $total_carrinho;
-    } else {
-        // Se não for Pix, calcula o valor com desconto do Pix
-        if ($desconto_pix > 0) {
-            // Calcula o desconto apenas sobre o valor dos produtos (já considerando o cupom)
-            $desconto_valor = $total_produtos * ($desconto_pix / 100);
-            $preco_com_desconto_pix = $total_produtos - $desconto_valor;
-            
-            // Adiciona o frete ao valor com desconto
-            $preco_final = $preco_com_desconto_pix + $frete;
-        } else {
-            // Se não houver desconto do Pix, usa o valor total do carrinho
-            $preco_final = $total_carrinho;
-        }
-    }
-
-    $fragments['.parcelas-flex-cart-info'] = '<tr class="parcelas-flex-cart-info"><th style="color: #00a650; font-weight: 600;">Total à vista no Pix:</th><td style="color: #00a650; font-weight: 600;">' . wc_price($preco_final) . '</td></tr>';
-    
-    return $fragments;
-}
-
-// Adiciona o script para atualização dinâmica no carrinho
-function parcelas_flex_enqueue_cart_scripts() {
-    if (is_cart()) {
-        wp_enqueue_script('parcelas-flex-cart', plugin_dir_url(__FILE__) . 'assets/js/cart.js', array('jquery'), null, true);
-    }
-}
-add_action('wp_enqueue_scripts', 'parcelas_flex_enqueue_cart_scripts');
 
 // Função para garantir que o preço no Google Merchant Center seja o preço original
 function parcelas_flex_ensure_original_price_for_google($price, $product) {
