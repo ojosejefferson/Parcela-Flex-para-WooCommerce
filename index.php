@@ -154,18 +154,13 @@ function parcelas_flex_show_pix_total() {
     $total_pix = $subtotal - $desconto_cupom - $desconto_pix + $frete;
 
     echo '<tr class="parcelas-flex-pix-total">';
-    echo '<th style="color: #00a650; font-weight: 600;">Total no Pix (10% OFF):</th>';
+    echo '<th style="color: #00a650; font-weight: 600;">Total no Pix </th>';
     echo '<td style="color: #00a650; font-weight: 600;">' . wc_price($total_pix) . '</td>';
     echo '</tr>';
 
-    // Debug
-    echo '<!-- Debug do Carrinho:
-    Subtotal (sem cupom): ' . wc_price($subtotal) . '
-    Desconto Cupom: ' . wc_price($desconto_cupom) . '
-    Desconto Pix: ' . wc_price($desconto_pix) . '
-    Frete: ' . wc_price($frete) . '
-    Total Pix: ' . wc_price($total_pix) . '
-    -->';
+
+
+    
 }
 
 
