@@ -136,20 +136,23 @@ add_filter('woocommerce_gpf_feed_item_sale_price', 'parcelas_flex_ensure_origina
 // Mostra o valor total com desconto Pix
 function parcelas_flex_show_pix_total() {
     $cart = WC()->cart;
-    if (!$cart) return;
+    if ( ! $cart ) return;
 
-    // Pega os valores do carrinho
-    $subtotal = (float) $cart->get_cart_contents_total();
+    // Subtotal REAL dos produtos (sem cupom)
+    $subtotal = (float) $cart->get_subtotal();
+
+    // Cupom aplicado (se existir)
     $desconto_cupom = (float) $cart->get_discount_total();
-    $frete = (float) $cart->get_shipping_total();
-    
-    // Calcula o desconto de 10% sobre o subtotal
-    $desconto_pix = $subtotal * 0.10;
-    
-    // Total final = subtotal - desconto pix - desconto cupom + frete
-    $total_pix = $subtotal - $desconto_pix - $desconto_cupom + $frete;
 
-    // Mostra o total
+    // Frete
+    $frete = (float) $cart->get_shipping_total();
+
+    // Desconto do Pix (10% sobre subtotal)
+    $desconto_pix = $subtotal * 0.10;
+
+    // Total final simulado: subtotal - cupom - desconto Pix + frete
+    $total_pix = $subtotal - $desconto_cupom - $desconto_pix + $frete;
+
     echo '<tr class="parcelas-flex-pix-total">';
     echo '<th style="color: #00a650; font-weight: 600;">Total no Pix (10% OFF):</th>';
     echo '<td style="color: #00a650; font-weight: 600;">' . wc_price($total_pix) . '</td>';
@@ -157,13 +160,14 @@ function parcelas_flex_show_pix_total() {
 
     // Debug
     echo '<!-- Debug do Carrinho:
-    Subtotal: ' . wc_price($subtotal) . '
+    Subtotal (sem cupom): ' . wc_price($subtotal) . '
     Desconto Cupom: ' . wc_price($desconto_cupom) . '
     Desconto Pix: ' . wc_price($desconto_pix) . '
     Frete: ' . wc_price($frete) . '
     Total Pix: ' . wc_price($total_pix) . '
     -->';
 }
+
 
 // Adiciona nos locais corretos
 add_action('woocommerce_cart_totals_after_order_total', 'parcelas_flex_show_pix_total');
