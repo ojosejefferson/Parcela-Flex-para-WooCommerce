@@ -230,6 +230,13 @@
 
 .desconto-pix-loop-simples .preco-pix {
     font-weight: 600;
+    color: #00a650 !important;
+
+}
+
+.preco-pix .woocommerce-Price-amount {
+  color: #00a650; /* verde, por exemplo */
+  font-weight: bold; /* opcional */
 }
 
 .desconto-pix-loop-simples .texto-pix {

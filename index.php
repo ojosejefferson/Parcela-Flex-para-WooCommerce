@@ -114,7 +114,7 @@ function add_custom_style()
         'forma-de-pagamentos', // Este é um 'handle' para o seu estilo
         plugin_dir_url(__FILE__) . 'assets/css/formadepagamentos.css', // Caminho para o seu arquivo css
         array(), // Dependências, deixe vazio se não houver nenhuma
-        '1.0.0' // Versão do seu arquivo css para controle de cache
+        '1.0.1' // Versão do seu arquivo css para controle de cache
     );
 }
 add_action('wp_enqueue_scripts', 'add_custom_style');
