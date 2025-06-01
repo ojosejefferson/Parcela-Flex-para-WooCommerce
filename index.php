@@ -119,62 +119,6 @@ function add_custom_style()
 }
 add_action('wp_enqueue_scripts', 'add_custom_style');
 
-
-
-
-
-
-
-//// Exibe valor simulado do Pix corretamente (no carrinho e checkout)
-function parcelas_flex_show_cart_discount_info() {
-    $cart = WC()->cart;
-    if (!$cart) return;
-
-    $subtotal = (float) $cart->get_cart_contents_total();
-    $frete = (float) $cart->get_shipping_total();
-    $desconto_cupom = (float) $cart->get_discount_total();
-    $desconto_pix_percentual = floatval(get_option('desconto_pix', 0));
-
-    // Total real do pedido, sem aplicar desconto Pix
-    $total_real = $subtotal + $frete - $desconto_cupom;
-    if ($total_real < 0) $total_real = 0;
-
-    // Valor que o cliente ganharia de desconto via Pix
-    $valor_desconto_pix = $total_real * ($desconto_pix_percentual / 100);
-
-    echo '<tr class="parcelas-flex-cart-info">';
-    echo '<th style="color: #00a650; font-weight: 600;">Total (sem desconto Pix):</th>';
-    echo '<td>' . wc_price($total_real) . '</td>';
-    echo '</tr>';
-
-    echo '<tr class="parcelas-flex-cart-info">';
-    echo '<th style="color: #00a650; font-weight: 600;">Você economizaria pagando no Pix:</th>';
-    echo '<td style="color: #00a650; font-weight: 600;">- ' . wc_price($valor_desconto_pix) . '</td>';
-    echo '</tr>';
-}
-
-
-// Fragmentos AJAX — CARRINHO e CHECKOUT
-function parcelas_flex_add_pix_to_fragments($fragments) {
-    ob_start();
-    parcelas_flex_show_cart_discount_info();
-    $fragments['.parcelas-flex-cart-info'] = ob_get_clean();
-    return $fragments;
-}
-
-// Remove qualquer hook antigo
-remove_action('woocommerce_proceed_to_checkout', 'parcelas_flex_show_cart_discount_info');
-remove_action('woocommerce_review_order_before_payment', 'parcelas_flex_show_cart_discount_info');
-
-// Adiciona onde precisa aparecer
-add_action('woocommerce_cart_totals_after_order_total', 'parcelas_flex_show_cart_discount_info');
-add_action('woocommerce_review_order_after_order_total', 'parcelas_flex_show_cart_discount_info');
-
-// Atualizações dinâmicas
-add_filter('woocommerce_add_to_cart_fragments', 'parcelas_flex_add_pix_to_fragments');
-add_filter('woocommerce_update_order_review_fragments', 'parcelas_flex_add_pix_to_fragments');
-
-
 // Função para garantir que o preço no Google Merchant Center seja o preço original
 function parcelas_flex_ensure_original_price_for_google($price, $product) {
     // Retorna o preço original do produto, sem considerar descontos
@@ -188,6 +132,41 @@ function parcelas_flex_ensure_original_sale_price_for_google($price, $product) {
     return $product->get_regular_price();
 }
 add_filter('woocommerce_gpf_feed_item_sale_price', 'parcelas_flex_ensure_original_sale_price_for_google', 10, 2);
+
+// Mostra o valor total com desconto Pix
+function parcelas_flex_show_pix_total() {
+    $cart = WC()->cart;
+    if (!$cart) return;
+
+    // Pega o total dos produtos e o frete
+    $subtotal = (float) $cart->get_cart_contents_total();
+    $frete = (float) $cart->get_shipping_total();
+    
+    // Calcula o desconto de 10% apenas sobre o subtotal
+    $desconto = $subtotal * 0.10;
+    
+    // Total final = subtotal - desconto + frete
+    $total_pix = $subtotal - $desconto + $frete;
+
+    echo '<tr class="parcelas-flex-pix-total">';
+    echo '<th style="color: #00a650; font-weight: 600;">Total no Pix (10% OFF):</th>';
+    echo '<td style="color: #00a650; font-weight: 600;">' . wc_price($total_pix) . '</td>';
+    echo '</tr>';
+}
+
+// Adiciona nos locais corretos
+add_action('woocommerce_cart_totals_after_order_total', 'parcelas_flex_show_pix_total');
+add_action('woocommerce_review_order_after_order_total', 'parcelas_flex_show_pix_total');
+
+// Atualiza via AJAX
+function parcelas_flex_update_pix_total($fragments) {
+    ob_start();
+    parcelas_flex_show_pix_total();
+    $fragments['.parcelas-flex-pix-total'] = ob_get_clean();
+    return $fragments;
+}
+add_filter('woocommerce_add_to_cart_fragments', 'parcelas_flex_update_pix_total');
+add_filter('woocommerce_update_order_review_fragments', 'parcelas_flex_update_pix_total');
 
 
 
