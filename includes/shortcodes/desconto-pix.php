@@ -167,7 +167,7 @@ class DescontoPixShortcode {
         // Layout simplificado apenas com o texto em verde
         $output = '<div class="desconto-pix-loop-simples">';
         $output .= '<span class="preco-pix">' . $preco_formatado . '</span>';
-        $output .= '<span class="texto-pix"> ' . esc_html($texto_no_pix) . '</span>';
+        $output .= '<span class="texto-pix">' . esc_html($texto_no_pix) . '</span>';
         $output .= '</div>';
 
         return $output;
