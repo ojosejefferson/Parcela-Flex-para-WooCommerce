@@ -221,7 +221,7 @@ function mostrar_pix_shortcode_abaixo_do_preco($price_html, $product) {
     // HTML Pix abaixo do preço
     $price_html .= '<div class="desconto-pix-loop-simples">';
     $price_html .= '<span class="preco-pix">' . $preco_formatado . ' </span>';
-    $price_html .= '<span class="texto-pix">' . esc_html($texto_no_pix) . ' </span>';
+    $price_html .= '<span class="texto-pix">' . esc_html($texto_no_pix) . '</span>';
     $price_html .= '<span class="badge badge-pix">-' . $desconto_pix . '%</span>';
     $price_html .= '</div>';
 

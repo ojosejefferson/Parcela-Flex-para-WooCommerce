@@ -215,7 +215,7 @@ function parcelas_flex_parcelamento_settings_page()
                             <td>Economize R$ 15,00 no Boleto</td>
                         </tr>
                         <tr>
-                            <td><code>[tabela_parcelas]</code></td>
+                            <td><code>[tabela_parcelamento]</code></td>
                             <td>Exibe uma tabela com todas as opções de parcelamento</td>
                             <td>Tabela completa de parcelas</td>
                         </tr>
@@ -225,7 +225,7 @@ function parcelas_flex_parcelamento_settings_page()
                             <td>Economize R$ 22,00</td>
                         </tr>
                         <tr>
-                            <td><code>[melhor_parcela]</code></td>
+                            <td><code>[melhor_parcelamento]</code></td>
                             <td>Exibe a melhor opção de parcelamento sem juros</td>
                             <td>Em até 3x de R$ 66,00 sem juros</td>
                         </tr>
