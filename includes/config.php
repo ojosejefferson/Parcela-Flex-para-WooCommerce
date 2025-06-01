@@ -194,7 +194,52 @@ function parcelas_flex_parcelamento_settings_page()
         </div>
         <div class="wc-settings-panel__body">
             <div class="wc-settings-panel__content">
-                <p>Para mais informações sobre os shortcodes disponíveis, visite nossa <a href="https://github.com/ojosejefferson/Parcelas-Flex-For-WooCommerce" target="_blank">documentação no GitHub</a>.</p>
+                <h3>Shortcodes Disponíveis:</h3>
+                <table class="widefat" style="margin-top: 15px;">
+                    <thead>
+                        <tr>
+                            <th>Shortcode</th>
+                            <th>Descrição</th>
+                            <th>Exemplo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>[desconto_pix]</code></td>
+                            <td>Mostra o valor do desconto no Pix</td>
+                            <td>Economize R$ 22,00 no Pix</td>
+                        </tr>
+                        <tr>
+                            <td><code>[desconto_boleto]</code></td>
+                            <td>Mostra o valor do desconto no Boleto</td>
+                            <td>Economize R$ 15,00 no Boleto</td>
+                        </tr>
+                        <tr>
+                            <td><code>[tabela_parcelas]</code></td>
+                            <td>Exibe uma tabela com todas as opções de parcelamento</td>
+                            <td>Tabela completa de parcelas</td>
+                        </tr>
+                        <tr>
+                            <td><code>[economize]</code></td>
+                            <td>Mostra quanto o cliente economiza no Pix</td>
+                            <td>Economize R$ 22,00</td>
+                        </tr>
+                        <tr>
+                            <td><code>[melhor_parcela]</code></td>
+                            <td>Exibe a melhor opção de parcelamento sem juros</td>
+                            <td>Em até 3x de R$ 66,00 sem juros</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-top: 20px;">
+                    <h4>Como usar:</h4>
+                    <p>Copie o shortcode desejado e cole em qualquer página, post ou widget do seu site. Por exemplo:</p>
+                    <pre style="background: #f0f0f1; padding: 10px; border-radius: 4px;">[desconto_pix] - Mostra o desconto no Pix
+[tabela_parcelas] - Mostra todas as opções de parcelamento</pre>
+                </div>
+
+                <p style="margin-top: 20px;">Para mais informações sobre os shortcodes disponíveis, visite nossa <a href="https://github.com/ojosejefferson/Parcelas-Flex-For-WooCommerce" target="_blank">documentação no GitHub</a>.</p>
             </div>
         </div>
     </div>
