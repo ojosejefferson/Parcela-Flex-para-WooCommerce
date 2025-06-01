@@ -138,20 +138,31 @@ function parcelas_flex_show_pix_total() {
     $cart = WC()->cart;
     if (!$cart) return;
 
-    // Pega o total dos produtos e o frete
+    // Pega os valores do carrinho
     $subtotal = (float) $cart->get_cart_contents_total();
+    $desconto_cupom = (float) $cart->get_discount_total();
     $frete = (float) $cart->get_shipping_total();
     
-    // Calcula o desconto de 10% apenas sobre o subtotal
-    $desconto = $subtotal * 0.10;
+    // Calcula o desconto de 10% sobre o subtotal
+    $desconto_pix = $subtotal * 0.10;
     
-    // Total final = subtotal - desconto + frete
-    $total_pix = $subtotal - $desconto + $frete;
+    // Total final = subtotal - desconto pix - desconto cupom + frete
+    $total_pix = $subtotal - $desconto_pix - $desconto_cupom + $frete;
 
+    // Mostra o total
     echo '<tr class="parcelas-flex-pix-total">';
     echo '<th style="color: #00a650; font-weight: 600;">Total no Pix (10% OFF):</th>';
     echo '<td style="color: #00a650; font-weight: 600;">' . wc_price($total_pix) . '</td>';
     echo '</tr>';
+
+    // Debug
+    echo '<!-- Debug do Carrinho:
+    Subtotal: ' . wc_price($subtotal) . '
+    Desconto Cupom: ' . wc_price($desconto_cupom) . '
+    Desconto Pix: ' . wc_price($desconto_pix) . '
+    Frete: ' . wc_price($frete) . '
+    Total Pix: ' . wc_price($total_pix) . '
+    -->';
 }
 
 // Adiciona nos locais corretos
