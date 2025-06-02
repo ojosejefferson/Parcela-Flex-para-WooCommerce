@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Parcelas Flex For WooCommerce by José Jefferson
+ * Plugin Name: Parcelas Flex For WooCommerce 
  * Description: Um plugin para adicionar opções de parcelamento no WooCommerce com descontos para Pix e Boleto. Compatível com produtos variáveis, ele proporciona flexibilidade de pagamento e otimiza a conversão de vendas.
  * Version: 3.0
  * Author: José Jefferson
@@ -152,7 +152,7 @@ function parcelas_flex_show_pix_total() {
 
     // Total final simulado: subtotal - cupom - desconto Pix + frete
     $total_pix = $subtotal - $desconto_cupom - $desconto_pix + $frete;
-    
+
     echo '<tr class="order-total parcelas-flex-pix-total">';
     echo '<th><span style="color: #00a650;">Total no Pix</span></th>';
     echo '<td data-title="Total no Pix"><strong><span class="woocommerce-Price-amount amount" style="color: #00a650;">' . wc_price($total_pix) . '</span></strong></td>';
