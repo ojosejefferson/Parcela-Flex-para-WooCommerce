@@ -152,12 +152,11 @@ function parcelas_flex_show_pix_total() {
 
     // Total final simulado: subtotal - cupom - desconto Pix + frete
     $total_pix = $subtotal - $desconto_cupom - $desconto_pix + $frete;
-
-    echo '<tr class="parcelas-flex-pix-total">';
-    echo '<th style="color: #00a650; font-weight: 600;">Total no Pix </th>';
-    echo '<td style="color: #00a650; font-weight: 600;">' . wc_price($total_pix) . '</td>';
+    
+    echo '<tr class="order-total parcelas-flex-pix-total">';
+    echo '<th><span style="color: #00a650;">Total no Pix</span></th>';
+    echo '<td data-title="Total no Pix"><strong><span class="woocommerce-Price-amount amount" style="color: #00a650;">' . wc_price($total_pix) . '</span></strong></td>';
     echo '</tr>';
-
 
 
     
